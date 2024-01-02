@@ -4,7 +4,7 @@ from rest_framework.response import Response   # JSON Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser # To check permission of user requesting something
 from rest_framework import status  # Status of Http request
 
-from base.serializers import UserSerializerWithToken  # Serialize user with token
+from base.serializers import UserSerializer, UserSerializerWithToken  # Serialize user with token
 from base.serializers import MyTokenObtainPairSerializer # Returns user with token for logging in
 
 from django.contrib.auth.models import User  # USER MODEL
@@ -12,6 +12,23 @@ from django.contrib.auth.hashers import make_password # to hash the password obt
 
 
 # Create Your Views Here
+
+@api_view(['GET'])
+def UserEndpoints(request):
+    endpoints = {
+        'login/' : "User Login",
+        'register/': "Register new user",
+        'profile/': "See your Profile",
+        'profile/update/': "Update your profile",
+
+        'users/': "See all users by admin",
+        'id/': "See user of that id by admin",
+        'delete/id/': "Delete user of that id by admin",
+        'update/id/' : "Update user of that id by admin"
+    }
+
+    return Response(endpoints)
+
 
 
 # Login User
@@ -42,3 +59,83 @@ def registerUser(request):
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
     
 
+
+
+# Update User Details by User Themselves
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated]) # permission to make sure user is authenticated before accessing url of the control function
+def updateUser(request):
+    user = request.user
+    serializer = UserSerializer(user, many=False)
+    data = request.data
+
+    user.first_name = data['name']
+    user.username = data['username']
+    user.email = data['email']
+    if data['password'] != '':
+        user.password = make_password(data['password'])
+    
+    user.save()
+    # save user and return data i.e. user details with token
+    return Response(serializer.data)
+
+
+
+# check user's details
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getUser(request):
+    user = request.user
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+
+
+# Get all user and details
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def getUsers(request):
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
+
+
+
+
+# Get user by ID
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def getUserByID(request,id):
+    user = User.objects.get(id=id)
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+
+
+# Update user by Admin
+@api_view(['PUT']) 
+@permission_classes([IsAdminUser])
+def updateUserByAdmin(request, pk):
+    user = User.objects.get(id=pk)
+    data = request.data
+
+    user.first_name = data['name']
+    user.username = data['email']
+    user.email = data['email']
+    user.is_staff = data['isAdmin']
+    
+    user.save()
+
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+
+
+
+# Delete user by Admin
+@api_view(['DELETE']) 
+@permission_classes([IsAdminUser])
+def deleteUser(request, id): 
+    user= User.objects.get(id=id)
+    user.delete()
+    return Response('User was deleted')
