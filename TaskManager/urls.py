@@ -17,7 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+
+# main urls where all routes are handled
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/users/', include('base.urls.user_urls')),
+    path('api/users/', include('base.urls.user_urls')), # Use the urlpatterns of base.urls.user_urls if path is api/users/
 ]

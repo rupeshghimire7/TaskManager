@@ -26,7 +26,6 @@ def UserEndpoints(request):
         'delete/id/': "Delete user of that id by admin",
         'update/id/' : "Update user of that id by admin"
     }
-
     return Response(endpoints)
 
 

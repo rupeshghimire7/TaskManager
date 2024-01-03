@@ -4,6 +4,8 @@ from rest_framework_simplejwt.tokens import RefreshToken # Give access token usi
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer # JWT's Serializer to give token of respective user
 
 
+## Serializers is used in Django to convert complex queryset of django objects into JSON and vice-versa
+
 
 # This serializes all objects of User model
 class UserSerializer(serializers.ModelSerializer):
