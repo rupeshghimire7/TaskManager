@@ -22,4 +22,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/users/', include('base.urls.user_urls')), # Use the urlpatterns of base.urls.user_urls if path is api/users/
+    path('',include('base.urls.task_urls.py'))
 ]
