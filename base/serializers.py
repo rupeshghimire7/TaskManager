@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken # Give access token usi
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer # JWT's Serializer to give token of respective user
 
 
+from base.models import Task
 ## Serializers is used in Django to convert complex queryset of django objects into JSON and vice-versa
 
 
@@ -55,3 +56,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = '__all__'
