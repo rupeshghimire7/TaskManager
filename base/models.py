@@ -4,17 +4,17 @@ from django.utils import timezone
 # Create your models here.
 
 CATEGORY_CHOICES = [
-        ('Health', 10),
-        ('Family', 9),
-        ('Work', 8),
-        ('Finance', 8),
-        ('Education', 7),
-        ('Personal', 5),
-        ('Career', 6),
-        ('Social', 4),
-        ('HouseholdErrands', 4),
-        ('Entertainment', 4),
-        ('Others', 2),
+        ('Health', 'Health'),
+        ('Family', 'Family'),
+        ('Work', 'Work'),
+        ('Finance', 'Finance'),
+        ('Education', 'Education'),
+        ('Personal', 'Personal'),
+        ('Career', 'Career'),
+        ('Social', 'Social'),
+        ('HouseholdErrands', 'Household Errands'),
+        ('Entertainment', 'Entertainment'),
+        ('Others', 'Others'),
     ]
 
 class Task(models.Model):
@@ -24,10 +24,10 @@ class Task(models.Model):
 
     due_date = models.DateField()
     due_time = models.TimeField()
-    est_completion = models.IntegerField(choices=[(i, str(i)) for i in range(1, 31)], default=1, help_text="Range: 1-30")
+    est_completion = models.IntegerField(choices=[(i, str(i)) for i in range(1, 31)], default=1, help_text="Estimated days for completion, Range: 1-30")
 
-    importance = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)], default=1, help_text="Range: 1-10")
-    complexity = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)], default=1, help_text="Range: 1-10")
+    importance = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)], default=1, help_text="Importance of the task, Range: 1-10")
+    complexity = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)], default=1, help_text="Complexity of the task, Range: 1-10")
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
 
     priority = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)], default=1)
