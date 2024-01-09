@@ -1,12 +1,9 @@
-import { Button } from "./components/ui/button"
+import { useRoutes } from "react-router-dom"
+import routes from "./Routes"
 
 function App() {
-	return (
-		<div>
-			Hello World!
-			<Button>Clicked</Button>
-		</div>
-	)
+  const appContent = useRoutes(routes)
+  return appContent
 }
 
 export default App
