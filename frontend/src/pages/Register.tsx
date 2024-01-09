@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Form,
@@ -9,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { Link } from "react-router-dom"
 import { z } from "zod"
 
 const registerFormSchema = z.object({
@@ -36,13 +38,13 @@ const Register = () => {
   return (
     <Card className="w-[350px] m-auto mt-36">
       <CardHeader>
-        <CardTitle>Register</CardTitle>
+        <CardTitle className="mx-auto">Register</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmitRegisterForm)}
-            className="flex flex-col items-start gap-2"
+            className="flex flex-col items-center gap-4"
           >
             <FormField
               control={form.control}
@@ -51,7 +53,11 @@ const Register = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" {...field} />
+                    <Input
+                      type="email"
+                      placeholder="Enter your email address"
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -64,7 +70,11 @@ const Register = () => {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input type="text" {...field} />
+                    <Input
+                      type="text"
+                      placeholder="Enter your username"
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -77,7 +87,11 @@ const Register = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="Enter a strong password"
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -90,13 +104,26 @@ const Register = () => {
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="Re-enter password to confirm"
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
             />
+
+            <Button type="submit">Register</Button>
           </form>
         </Form>
+
+        <p className="text-center mt-2">
+          Already have an account?{" "}
+          <Link to={"/"} className="text-blue-500 hover:text-blue-700">
+            Login
+          </Link>
+        </p>
       </CardContent>
     </Card>
   )
