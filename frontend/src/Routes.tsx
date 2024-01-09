@@ -1,15 +1,16 @@
 import type { RouteObject } from "react-router-dom"
-import LoginPage from "./pages/LoginPage"
+import Login from "./pages/Login"
+import Register from "./pages/Register"
 
 const routes: RouteObject[] = [
-	{
-		path: "/",
-		element: <LoginPage />,
-	},
-	{
-		path: "/register",
-		element: <LoginPage />,
-	},
+  {
+    path: "/",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
 ]
 
 export default routes

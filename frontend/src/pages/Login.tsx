@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { Link } from "react-router-dom"
 import * as z from "zod"
 
 const loginFormSchema = z.object({
@@ -18,8 +19,8 @@ const loginFormSchema = z.object({
   password: z.string().min(8).max(50),
 })
 
-const LoginPage = () => {
-  const [passwordView, setPasswordView] = useState<Boolean>(false)
+const Login = () => {
+  // const [passwordView, setPasswordView] = useState<Boolean>(false)
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -33,20 +34,20 @@ const LoginPage = () => {
     console.log(values)
   }
 
-  function togglePasswordView() {
-    setPasswordView(!passwordView)
-  }
+  // function togglePasswordView() {
+  //   setPasswordView(!passwordView)
+  // }
 
   return (
     <Card className="w-[350px] m-auto mt-36">
       <CardHeader>
-        <CardTitle>Login</CardTitle>
+        <CardTitle className="mx-auto">Login</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmitLoginForm)}
-            className="flex flex-col items-start gap-2"
+            className="flex flex-col items-center gap-4"
           >
             <FormField
               control={form.control}
@@ -73,7 +74,8 @@ const LoginPage = () => {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input
-                      type={passwordView ? "text" : "password"}
+                      type="password"
+                      // type={passwordView ? "text" : "password"}
                       placeholder="Enter your password"
                       {...field}
                     />
@@ -91,9 +93,16 @@ const LoginPage = () => {
             <Button type="submit">Login</Button>
           </form>
         </Form>
+
+        <p className="text-center mt-2">
+          Don't have an account?{" "}
+          <Link to={"/register"} className="text-blue-500 hover:text-blue-700">
+            Register
+          </Link>
+        </p>
       </CardContent>
     </Card>
   )
 }
 
-export default LoginPage
+export default Login
