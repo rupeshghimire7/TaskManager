@@ -30,7 +30,7 @@ const Login = () => {
       username: "tester",
       password: "Test@1234",
     }
-    axiosInstance.post("/users/login", data).then((res) => {
+    axiosInstance.post("/users/login/", data).then((res) => {
       console.log(res.data)
     })
   }, [])
