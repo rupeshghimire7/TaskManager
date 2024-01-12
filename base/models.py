@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone
 # Create your models here.
 
 CATEGORY_CHOICES = [
@@ -35,11 +34,7 @@ class Task(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    @property
-    def days_remaining(self):
-        today = timezone.now().date()
-        remaining_days = (self.due_date - today).days
-        return max(remaining_days, -1)
+
 
 
     def __str__(self):
