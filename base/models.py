@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone
 # Create your models here.
 
 CATEGORY_CHOICES = [
@@ -30,16 +29,12 @@ class Task(models.Model):
     complexity = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)], default=1, help_text="Complexity of the task, Range: 1-10")
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
 
+    is_completed = models.BooleanField(default=False)
+
     priority = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)], default=1)
 
     created_on = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    @property
-    def days_remaining(self):
-        today = timezone.now().date()
-        remaining_days = (self.due_date - today).days
-        return max(remaining_days, -1)
 
 
     def __str__(self):
