@@ -128,12 +128,13 @@ def getTask(request, pk):
 # -----------------------------------------------------------------------------------------------------------------
 @api_view(['PUT']) # api call with http method - PUT 
 @permission_classes([IsAuthenticated])
-def updateTask(request, pk): # function to update product by id
+def updateTask(request, pk): 
     data = request.data
-    # get product by id
+    # get product by user and id
     task = get_object_or_404(Task, user=request.user, id=pk)
     remaining_days = days_remaining(data['due_date'])
     cat_value = get_category_value(data["category"])
+
     # update the instance with data given by user
     task.title=data['title']
     task.description = data['description']
@@ -143,6 +144,7 @@ def updateTask(request, pk): # function to update product by id
     task.importance = data['importance']
     task.complexity = data['complexity']
     task.category = data['category']
+    task.is_completed = data['is_completed']
     task.priority = svm_model.predict([[data['importance'],data['complexity'], remaining_days,data['est_completion'], cat_value]])[0]
     task.save()
 
@@ -151,5 +153,16 @@ def updateTask(request, pk): # function to update product by id
 
 
 
+
+
+# ----------------------------------- Delete Task ----------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------------------
+
+@api_view(['DELETE']) # api call with http method - DELETE
+@permission_classes([IsAuthenticated])
+def deleteTask(request, pk): 
+    task = get_object_or_404(Task, user=request.user, id=pk)
+    task.delete()
+    return Response('Task deleted')
 
 

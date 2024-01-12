@@ -29,12 +29,12 @@ class Task(models.Model):
     complexity = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)], default=1, help_text="Complexity of the task, Range: 1-10")
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
 
+    is_completed = models.BooleanField(default=False)
+
     priority = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)], default=1)
 
     created_on = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-
 
 
     def __str__(self):
