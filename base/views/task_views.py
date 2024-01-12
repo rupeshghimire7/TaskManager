@@ -4,11 +4,13 @@ import os
 from django.utils import timezone
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 
 from base.models import Task
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from base.serializers import TaskSerializer
 
 
@@ -16,6 +18,16 @@ from base.serializers import TaskSerializer
 # ----------------------------------- LOAD MODEL --------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------- 
 
+'''
+data = pd.DataFrame({
+    'Importance': importance,
+    'Complexity': complexity,
+    'Days_till_Deadline': days_till_deadline,
+    'Estimated_Days': estimated_days,
+    'Category': category_values,
+    'Priority': priority
+})
+'''
 
 # Navigate up to the BASE_DIR
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -54,27 +66,23 @@ def days_remaining(due_date):
 # ----------------------------------- GET ALL TASKS FOR THAT USER -------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------
 @api_view(["GET"])
-def get_tasks(request):
+@permission_classes([IsAuthenticated])
+def getTasks(request):
     user = request.user
     tasks = Task.objects.filter(user=user).order_by('-priority')
     tasks = tasks.sort
     serializer = TaskSerializer(tasks, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data,status=status.HTTP_200_OK)
 
 
 
-# data['Target'] = (
-#     0.35 * data['Importance'] +
-#     0.1 * data['Days_Remaining'] +
-#     0.2 * data['Complexity'] +
-#     0.05 * data['Estimated_Days'] +
-#     0.3 * data['Category']
 
 # ----------------------------------- Create Tasks ----------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------
 
 @api_view(["POST"])
-def create_task(request):
+@permission_classes([IsAuthenticated])
+def createTask(request):
     user = request.user
     data = request.data
 
@@ -90,10 +98,58 @@ def create_task(request):
 
         due_date = data['due_date'],
         due_time = data['due_time'],
-        est_completion = data['completion_days'],
+        est_completion = data['est_completion'],
 
         importance = data['importance'],
         complexity = data['complexity'],
         category = data['category'],
-        priority = svm_model()
+
+        priority = svm_model.predict([[data['importance'],data['complexity'], remaining_days,data['est_completion'], cat_value]])[0]
     )
+
+    serializer = Task(task, many=False)
+    return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+
+
+# ----------------------------------- Get Single Task ----------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------------------
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getTask(request, pk):
+    task = get_object_or_404(Task, user=request.user, id=pk)
+    serializer = TaskSerializer(task, many=False)
+    return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+
+# ----------------------------------- Update Task ----------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------------------
+@api_view(['PUT']) # api call with http method - PUT 
+@permission_classes([IsAuthenticated])
+def updateTask(request, pk): # function to update product by id
+    data = request.data
+    # get product by id
+    task = get_object_or_404(Task, user=request.user, id=pk)
+    remaining_days = days_remaining(data['due_date'])
+    cat_value = get_category_value(data["category"])
+    # update the instance with data given by user
+    task.title=data['title']
+    task.description = data['description']
+    task.due_date = data['due_date']
+    task.due_time = data['due_time']
+    task.est_completion = data['est_completion']
+    task.importance = data['importance']
+    task.complexity = data['complexity']
+    task.category = data['category']
+    task.priority = svm_model.predict([[data['importance'],data['complexity'], remaining_days,data['est_completion'], cat_value]])[0]
+    task.save()
+
+    serializer = Task(task, many=False)
+    return Response(serializer.data)
+
+
+
+
+
