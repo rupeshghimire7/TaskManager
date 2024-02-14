@@ -10,10 +10,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { z } from "zod"
 import { Helmet } from "react-helmet"
 import axiosInstance from "@/lib/utils/api"
+import { useContext, useEffect } from "react"
+import { AuthContext } from "@/lib/context/authContext"
+
 
 const registerFormSchema = z.object({
   email: z.string().min(3).max(50),
@@ -44,6 +47,15 @@ const Register = () => {
       console.log("Register", error)
     }
   }
+
+  const isLoggedIn = useContext(AuthContext)
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/')
+    }
+  }, [isLoggedIn])
 
   return (
     <>
