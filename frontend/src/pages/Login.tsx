@@ -14,11 +14,12 @@ import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 import { Helmet } from "react-helmet"
 import * as z from "zod"
-import useSWR from "swr"
-import { postFetcher } from "@/lib/utils/axiosFetchers"
+// import useSWR from "swr"
+// import { postFetcher } from "@/lib/utils/axiosFetchers"
+import axiosInstance from "@/lib/utils/api"
 
 const loginFormSchema = z.object({
-  email: z.string().min(3).max(50),
+  username: z.string().min(3).max(50),
   password: z.string().min(8).max(50),
 })
 
@@ -28,24 +29,19 @@ const Login = () => {
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   })
 
-  const loginData = {
-    username: "tester",
-    password: "Test@1234",
-  }
-
-  const { data, error, isLoading } = useSWR("/users/login/", (url: string) =>
-    postFetcher(url, loginData)
-  )
-
-  console.log(data, error, isLoading)
-
-  function onSubmitLoginForm(values: z.infer<typeof loginFormSchema>) {
-    console.log(values)
+  async function onSubmitLoginForm(values: z.infer<typeof loginFormSchema>) {
+    try {
+      const response = await axiosInstance.post('/users/login/', values)
+      console.log(response.data)
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
 
   // function togglePasswordView() {
@@ -69,14 +65,14 @@ const Login = () => {
             >
               <FormField
                 control={form.control}
-                name="email"
+                name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input
-                        type="email"
-                        placeholder="Enter your email address"
+                        type="text"
+                        placeholder="Enter your Username"
                         {...field}
                       />
                     </FormControl>
