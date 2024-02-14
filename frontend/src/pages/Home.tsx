@@ -1,10 +1,20 @@
 import axiosInstance from "@/lib/utils/api"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+
+interface Task {
+  id: number
+  title: string
+  description: string
+  completed: boolean
+  created_at: string
+  updated_at: string
+}
 
 const Home = () => {
+  const [taskList, setTaskList] = useState<[]>([])
+
   useEffect(() => {
-    console.log("Home page")
-    axiosInstance.get("/tasks/").then((res) => console.log(res.data))
+    axiosInstance.get("/tasks/").then((res) => setTaskList(res.data))
   }, [])
 
   // const taskList = []
@@ -13,7 +23,11 @@ const Home = () => {
     <div>
       <div>Task add bar</div>
       <div>Task</div>
-      <div>Tasks List</div>
+      <div>
+        {taskList.map((task: Task) => (
+          <div key={task?.id}>{task?.title}</div>
+        ))}
+      </div>
     </div>
   )
 }
