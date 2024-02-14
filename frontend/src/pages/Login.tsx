@@ -33,14 +33,16 @@ const Login = () => {
     },
   })
 
-  // const loginData = {
-  //   username: "tester",
-  //   password: "Test@1234",
-  // }
+  const loginData = {
+    username: "tester",
+    password: "Test@1234",
+  }
 
-  // const { data, error, isLoading } = useSWR("/users/login/", () =>
-  //   postFetcher(loginData)
-  // )
+  const { data, error, isLoading } = useSWR("/users/login/", (url: string) =>
+    postFetcher(url, loginData)
+  )
+
+  console.log(data, error, isLoading)
 
   function onSubmitLoginForm(values: z.infer<typeof loginFormSchema>) {
     console.log(values)

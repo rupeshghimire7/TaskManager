@@ -1,18 +1,19 @@
-import axios from "axios"
+import axiosInstance from "./api"
 
-const getFetcher = (url: string) => () => axios.get(url).then((res) => res.data)
+const getFetcher = (url: string) =>
+  axiosInstance.get(url).then((res) => res.data)
 
-const postFetcher = (url: string) => (body: any) =>
-  axios.post(url, body).then((res) => res.data)
+const postFetcher = (url: string, body: any) =>
+  axiosInstance.post(url, body).then((res) => res.data)
 
-const putFetcher = (url: string) => (body: any) =>
-  axios.put(url, body).then((res) => res.data)
+const putFetcher = (url: string, body: any) =>
+  axiosInstance.put(url, body).then((res) => res.data)
 
 const deleteFetcher = (url: string) => () =>
-  axios.delete(url).then((res) => res.data)
+  axiosInstance.delete(url).then((res) => res.data)
 
 const authenticatedGetFetcher = (url: string, token: string) => () =>
-  axios
+  axiosInstance
     .get(url, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -21,7 +22,7 @@ const authenticatedGetFetcher = (url: string, token: string) => () =>
     .then((res) => res.data)
 
 const authenticatedPostFetcher = (url: string, token: string) => (body: any) =>
-  axios
+  axiosInstance
     .post(url, body, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -30,7 +31,7 @@ const authenticatedPostFetcher = (url: string, token: string) => (body: any) =>
     .then((res) => res.data)
 
 const authenticatedPutFetcher = (url: string, token: string) => (body: any) =>
-  axios
+  axiosInstance
     .put(url, body, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -39,7 +40,7 @@ const authenticatedPutFetcher = (url: string, token: string) => (body: any) =>
     .then((res) => res.data)
 
 const authenticatedDeleteFetcher = (url: string, token: string) => () =>
-  axios
+  axiosInstance
     .delete(url, {
       headers: {
         Authorization: `Bearer ${token}`,
