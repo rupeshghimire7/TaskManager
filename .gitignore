@@ -3,7 +3,6 @@
 # *.pyc
 TaskManager/__pycache__/
 /myenv
-
 .env
 
 # Logs
