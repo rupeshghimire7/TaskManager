@@ -13,9 +13,11 @@ import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 import { z } from "zod"
 import { Helmet } from "react-helmet"
+import axiosInstance from "@/lib/utils/api"
 
 const registerFormSchema = z.object({
   email: z.string().min(3).max(50),
+  name: z.string().min(3).max(50),
   username: z.string().min(3).max(50),
   password: z.string().min(8).max(50),
   confirm_password: z.string().min(8).max(50),
@@ -26,14 +28,21 @@ const Register = () => {
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
       email: "",
+      name: "",
       username: "",
       password: "",
       confirm_password: "",
     },
   })
 
-  function onSubmitRegisterForm(values: z.infer<typeof registerFormSchema>) {
-    console.log("form Submitted", values)
+  async function onSubmitRegisterForm(values: z.infer<typeof registerFormSchema>) {
+    try {
+      const { email, name, username, password } = values
+      const response = await axiosInstance.post('/users/register/', { email, name, username, password })
+      console.log("form Submitted", response.data)
+    } catch (error) {
+      console.log("Register", error)
+    }
   }
 
   return (
@@ -61,6 +70,23 @@ const Register = () => {
                       <Input
                         type="email"
                         placeholder="Enter your email address"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Enter your name"
                         {...field}
                       />
                     </FormControl>
@@ -125,7 +151,7 @@ const Register = () => {
 
           <p className="text-center mt-2">
             Already have an account?{" "}
-            <Link to={"/"} className="text-blue-500 hover:text-blue-700">
+            <Link to={"/login"} className="text-blue-500 hover:text-blue-700">
               Login
             </Link>
           </p>
