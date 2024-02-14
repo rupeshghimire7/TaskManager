@@ -14,8 +14,8 @@ import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 import { Helmet } from "react-helmet"
 import * as z from "zod"
-import { useEffect } from "react"
-import axiosInstance from "@/lib/utils/api"
+import useSWR from "swr"
+import { postFetcher } from "@/lib/utils/axiosFetchers"
 
 const loginFormSchema = z.object({
   email: z.string().min(3).max(50),
@@ -25,16 +25,6 @@ const loginFormSchema = z.object({
 const Login = () => {
   // const [passwordView, setPasswordView] = useState<Boolean>(false)
 
-  useEffect(() => {
-    const data = {
-      username: "tester",
-      password: "Test@1234",
-    }
-    axiosInstance.post("/users/login/", data).then((res) => {
-      console.log(res.data)
-    })
-  }, [])
-
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -42,6 +32,15 @@ const Login = () => {
       password: "",
     },
   })
+
+  // const loginData = {
+  //   username: "tester",
+  //   password: "Test@1234",
+  // }
+
+  // const { data, error, isLoading } = useSWR("/users/login/", () =>
+  //   postFetcher(loginData)
+  // )
 
   function onSubmitLoginForm(values: z.infer<typeof loginFormSchema>) {
     console.log(values)
