@@ -81,6 +81,13 @@ def days_remaining(due_date):
     return max(remaining_days, -1)
 
 
+
+def get_is_completed(pk):
+    task = get_object_or_404(Task, id=pk)
+    return task.is_completed
+
+
+
 # ----------------------------------- GET ALL TASKS FOR THAT USER -------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------
 @api_view(["GET"])
@@ -163,7 +170,8 @@ def updateTask(request, pk):
     task.importance = data["importance"]
     task.complexity = data["complexity"]
     task.category = data["category"]
-    task.is_completed = data["is_completed"]
+    task.is_completed = data['is_completed']
+
     task.priority = svm_model.predict(
         [
             [
