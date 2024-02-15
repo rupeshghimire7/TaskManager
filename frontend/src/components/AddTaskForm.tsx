@@ -162,7 +162,7 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Estimated Completion (in days [1-30])</FormLabel>
                 <FormControl>
-                  <Input type={"number"} {...field} />
+                  <Input type={"number"} max={30} min={1} {...field} />
                 </FormControl>
               </FormItem>
             )}
@@ -174,7 +174,7 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Importance [1-10]</FormLabel>
                 <FormControl>
-                  <Input type={"number"} {...field} />
+                  <Input type={"number"} max={10} min={1} {...field} />
                 </FormControl>
               </FormItem>
             )}
@@ -186,7 +186,7 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Complexity [1-10]</FormLabel>
                 <FormControl>
-                  <Input type={"number"} {...field} />
+                  <Input type={"number"} max={10} min={1} {...field} />
                 </FormControl>
               </FormItem>
             )}
@@ -198,7 +198,7 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Priority [1-10]</FormLabel>
                 <FormControl>
-                  <Input type={"number"} {...field} />
+                  <Input type={"number"} max={10} min={1} {...field} />
                 </FormControl>
               </FormItem>
             )}
