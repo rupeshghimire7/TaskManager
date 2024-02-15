@@ -22,14 +22,7 @@ export default function TaskList() {
         },
       })
       .then((res) => {
-        setTasks(
-          res.data.map((task: any) => ({
-            ...task,
-            dueDate: new Date(task?.due_date).toLocaleDateString(),
-            isCompleted: task?.is_completed,
-            estCompletion: task?.est_completion,
-          }))
-        )
+        setTasks(res.data)
       })
   }, [])
 
@@ -54,6 +47,46 @@ export default function TaskList() {
       })
   }
 
+  function handleToggleTaskStatus(id: string) {
+    const task = tasks.find((task: any) => task.id === id)
+
+    const newTask = {
+      ...task,
+      is_completed: !task.is_completed,
+    }
+
+    axiosInstance
+      .put(
+        `/tasks/update/${id}/`,
+        {
+          ...newTask,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res)
+        toast.success("Task marked as completed")
+        setTasks(
+          (prevTasks: any) =>
+            prevTasks?.map((task: any) =>
+              task.id === id
+                ? {
+                    ...newTask,
+                  }
+                : task
+            ) || []
+        )
+      })
+      .catch((error) => {
+        console.error("Error:", error)
+        toast.error("Error completing task")
+      })
+  }
+
   return (
     <div className="max-w-md w-full mx-auto grid gap-4">
       <Accordion type="single" collapsible>
@@ -62,14 +95,14 @@ export default function TaskList() {
             <AccordionTrigger
               style={{
                 textDecoration: "none",
-                color: task.completed ? "gray" : "black",
+                color: task.is_completed ? "gray" : "black",
               }}
             >
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id={task.id}
-                  onChange={undefined}
-                  checked={task.completed}
+                  onClick={() => handleToggleTaskStatus(task.id)}
+                  checked={task.is_completed}
                 />
                 <span className="font-medium">{task.title}</span>
               </div>
@@ -87,7 +120,7 @@ export default function TaskList() {
               <div className="grid gap-2">
                 <p className="text-sm">{task.description}</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Due by {task.dueDate}
+                  Due by {new Date(task.due_date).toLocaleDateString()}
                 </p>
               </div>
             </AccordionContent>
