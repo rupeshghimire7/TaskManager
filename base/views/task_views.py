@@ -191,7 +191,7 @@ def deleteTask(request, pk):
 
 # ----------------------------------- Categories list api ---------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------
-@api_view(["GET"])  # api call with http method - DELETE
+@api_view(["GET"]) 
 def category_list(request):
     CATEGORY_CHOICES = [
         "Health", 
@@ -206,5 +206,4 @@ def category_list(request):
         "Entertainment",
         "Others",
     ]
-
-    return Response({"CATEGORIES":CATEGORY_CHOICES})
+    return Response({"categories": CATEGORY_CHOICES}, status=status.HTTP_200_OK)
