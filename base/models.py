@@ -23,7 +23,7 @@ class Task(models.Model):
     title = models.CharField(max_length=200, null=False, blank=False)
     description = models.TextField(max_length=10000, null=True, blank=True)
 
-    due_date = models.DateTimeField()  # date
+    due_date = models.DateField()  # date
 
     est_completion = models.IntegerField(default=5) # 1 to 30 range
 
