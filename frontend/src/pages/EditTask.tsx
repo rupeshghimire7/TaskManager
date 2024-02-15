@@ -3,8 +3,8 @@ import Layout from "@/components/Layout/Layout"
 import { useParams } from "react-router-dom"
 
 const EditTask = () => {
-  const params = useParams()
-  const taskId = params?.id
+  const { id } = useParams<{ id: string }>()
+  const taskId: string = id
   console.log("taskId:", taskId)
 
   return (

@@ -72,6 +72,8 @@ def get_category_value(value):
 
 def days_remaining(due_date):
     today = timezone.now().date()
+    print(today)
+    print(due_date)
     remaining_days = (due_date - today).days
     return max(remaining_days, -1)
 
@@ -82,7 +84,7 @@ def days_remaining(due_date):
 @permission_classes([IsAuthenticated])
 def getTasks(request):
     user = request.user
-    tasks = Task.objects.filter(user=user).order_by('-priority')
+    tasks = Task.objects.filter(user=user).order_by("-priority")
     tasks = sorted(tasks)
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -105,8 +107,8 @@ def createTask(request):
         user=user,
         title=data["title"],
         description=data["description"],
-        due_date = datetime.strptime(data["due_date"], "%Y-%m-%d"),
-        due_time = datetime.strptime(data["due_time"], "%H:%M"),
+        due_date=datetime.strptime(data["due_date"], "%Y-%m-%d"),
+        due_time=datetime.strptime(data["due_time"], "%H:%M"),
         est_completion=data["est_completion"],
         importance=data["importance"],
         complexity=data["complexity"],
@@ -188,21 +190,20 @@ def deleteTask(request, pk):
     return Response("Task deleted")
 
 
-
 # ----------------------------------- Categories list api ---------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------
-@api_view(["GET"]) 
+@api_view(["GET"])
 def category_list(request):
     CATEGORY_CHOICES = [
-        "Health", 
-        "Family", 
+        "Health",
+        "Family",
         "work",
-        "Finance",      
+        "Finance",
         "Education",
-        "Personal", 
-        "Career", 
-        "Social", 
-        "Household Errands", 
+        "Personal",
+        "Career",
+        "Social",
+        "Household Errands",
         "Entertainment",
         "Others",
     ]
