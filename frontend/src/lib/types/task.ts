@@ -10,3 +10,9 @@ export interface Task {
   isCompleted: boolean
   priority: number
 }
+
+export interface User {
+  name: string
+  email: string
+  username: string
+}
