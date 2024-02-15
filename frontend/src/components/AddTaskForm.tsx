@@ -94,7 +94,7 @@ const AddTaskForm = () => {
         console.error("Error:", error)
         toast.error("Error adding task")
       })
-      .finally(() => {})
+      .finally(() => { })
   }
 
   const [categories, setCategories] = useState([])
@@ -218,24 +218,6 @@ const AddTaskForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Complexity [1-10]</FormLabel>
-                <FormControl>
-                  <Input
-                    type={"number"}
-                    {...field}
-                    inputMode="numeric"
-                    min={1}
-                    max={10}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="priority"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Priority [1-10]</FormLabel>
                 <FormControl>
                   <Input
                     type={"number"}
