@@ -8,10 +8,17 @@ import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { Checkbox } from "./ui/checkbox"
 import { Label } from "./ui/label"
-import { Select, SelectContent, SelectItem } from "./ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select"
 import { getToken } from "@/lib/helpers/localStorage"
 import { Textarea } from "./ui/textarea"
 import { toast } from "sonner"
+import axiosInstance from "@/lib/utils/api"
 
 const AddTaskForm = () => {
   const initialTask: Task = {
@@ -48,34 +55,47 @@ const AddTaskForm = () => {
   function onAddTask(values: z.infer<typeof taskSchema>) {
     console.log(values)
 
-    fetch("/tasks/", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
-      body: JSON.stringify(values),
-    })
-      .then((res) => res.json())
+    axiosInstance
+      .post(
+        "/tasks/create/",
+        {
+          title: values.title,
+          description: values.description,
+          due_date: values.dueDate,
+          due_time: values.dueTime,
+          est_completion: values.estCompletion,
+          importance: values.importance,
+          complexity: values.complexity,
+          category: values.category,
+          is_completed: values.isCompleted,
+          priority: values.priority,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      )
+      .then((res) => res.data)
       .then((data) => {
         console.log(data)
         toast.success("Task added successfully")
+        form.reset()
       })
       .catch((error) => {
         console.error("Error:", error)
         toast.error("Error adding task")
       })
-      .finally(() => {
-        form.reset()
-      })
+      .finally(() => {})
   }
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onAddTask)}
-        className="p-4 bg-white rounded-md shadow-md"
+        className="p-4 bg-white rounded-md "
       >
-        <div className="grid grid-cols-4 items-center gap-4">
+        <div className="grid grid-cols-2 items-start gap-4">
           <FormField
             control={form.control}
             name="title"
@@ -88,36 +108,29 @@ const AddTaskForm = () => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea placeholder={"Enter description"} {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+
           <FormField
             control={form.control}
             name="category"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <Select {...field}>
-                    <SelectContent>
-                      <SelectItem value="_">Select a category</SelectItem>
-                    </SelectContent>
-                    <SelectContent>
-                      <SelectItem value="work">Work</SelectItem>
-                      <SelectItem value="personal">Personal</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  {...field}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="work">Work</SelectItem>
+                    <SelectItem value="personal">Personal</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </FormItem>
             )}
           />
@@ -150,7 +163,7 @@ const AddTaskForm = () => {
             name="estCompletion"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Estimated Completion (in days)</FormLabel>
+                <FormLabel>Estimated Completion (in days [1-30])</FormLabel>
                 <FormControl>
                   <Input type={"number"} {...field} />
                 </FormControl>
@@ -162,7 +175,7 @@ const AddTaskForm = () => {
             name="importance"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Importance</FormLabel>
+                <FormLabel>Importance [1-10]</FormLabel>
                 <FormControl>
                   <Input type={"number"} {...field} />
                 </FormControl>
@@ -174,7 +187,7 @@ const AddTaskForm = () => {
             name="complexity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Complexity</FormLabel>
+                <FormLabel>Complexity [1-10]</FormLabel>
                 <FormControl>
                   <Input type={"number"} {...field} />
                 </FormControl>
@@ -186,16 +199,32 @@ const AddTaskForm = () => {
             name="priority"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Priority</FormLabel>
+                <FormLabel>Priority [1-10]</FormLabel>
                 <FormControl>
                   <Input type={"number"} {...field} />
                 </FormControl>
               </FormItem>
             )}
           />
+          <div className="col-start-1 col-end-3">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder={"Enter description"} {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
-        <Button type="submit">Create Task</Button>
+        <Button type="submit" className="mt-4 mb-2 bg-green-600 float-right">
+          Create Task
+        </Button>
       </form>
     </Form>
   )
