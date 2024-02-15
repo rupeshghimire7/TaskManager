@@ -1,41 +1,17 @@
-import axiosInstance from "@/lib/utils/api"
-import { useEffect, useState } from "react"
-import { getToken } from "@/lib/helpers/localStorage"
 import Layout from "@/components/Layout/Layout"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
+import TaskList from "@/components/TaskList/TaskList"
 
 const Home = () => {
-  const [taskList, setTaskList] = useState<[]>([])
-
-  useEffect(() => {
-    axiosInstance
-      .get("/tasks/", {
-        headers: {
-          Authorizaion: `Bearer ${getToken()}`,
-        },
-      })
-      .then((res) => setTaskList(res.data))
-  }, [])
-
-  // const taskList = [
-
   return (
     <Layout>
       <div className="space-y-2 py-4 ml-6">
         <Link to="/add-task">
-          <Button variant="destructive">Add task</Button>
+          <Button className="bg-green-600 hover:bg-green-800">Add task</Button>
         </Link>
         <div>
-          {taskList.length ? (
-            <div>
-              {taskList.map((task: any) => (
-                <div key={task?.title}>{task?.title}</div>
-              ))}
-            </div>
-          ) : (
-            "No task added"
-          )}
+          <TaskList />
         </div>
       </div>
     </Layout>

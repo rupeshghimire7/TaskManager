@@ -1,175 +1,104 @@
-import {
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableCell,
-  TableBody,
-  Table,
-} from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Button } from "@/components/ui/button"
+import {
+  AccordionTrigger,
+  AccordionContent,
+  AccordionItem,
+  Accordion,
+} from "@/components/ui/accordion"
+import { Link } from "react-router-dom"
+import axiosInstance from "@/lib/utils/api"
+import { toast } from "sonner"
+import { getToken } from "@/lib/helpers/localStorage"
+import { useEffect, useState } from "react"
 
 export default function TaskList() {
+  const [tasks, setTasks] = useState<any>([])
+
+  useEffect(() => {
+    axiosInstance
+      .get("/tasks/", {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      })
+      .then((res) => {
+        setTasks(
+          res.data.map((task: any) => ({
+            ...task,
+            dueDate: new Date(task?.due_date).toLocaleDateString(),
+            isCompleted: task?.is_completed,
+            estCompletion: task?.est_completion,
+          }))
+        )
+      })
+  }, [])
+
+  function handleDeleteTask(id: string) {
+    axiosInstance
+      .delete(`/tasks/delete/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      })
+      .then((res) => {
+        console.log(res)
+        toast.success("Task deleted successfully")
+        setTasks(
+          (prevTasks: any) =>
+            prevTasks?.filter((task: any) => task?.id !== id) || []
+        )
+      })
+      .catch((error) => {
+        console.error("Error:", error)
+        toast.error("Error deleting task")
+      })
+  }
+
   return (
-    <div className="border rounded-lg w-full">
-      <div className="relative w-full overflow-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[32px]" />
-              <TableHead className="w-[150px]">Title</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="w-[100px]">Due Date</TableHead>
-              <TableHead className="w-[100px]">Due Time</TableHead>
-              <TableHead className="w-[150px]">Est. Completion</TableHead>
-              <TableHead>Importance</TableHead>
-              <TableHead>Complexity</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead className="w-[100px]">Is Completed</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableCell className="space-y-1">
-                <Checkbox id="select-1" />
-              </TableCell>
-              <TableCell className="font-medium">Design UI</TableCell>
-              <TableCell>Sketch wireframes and mockups</TableCell>
-              <TableCell className="font-medium">2023-07-10</TableCell>
-              <TableCell className="font-medium">10:00 AM</TableCell>
-              <TableCell className="font-medium">2h</TableCell>
-              <TableCell className="font-medium">High</TableCell>
-              <TableCell className="font-medium">Low</TableCell>
-              <TableCell className="font-medium">Design</TableCell>
-              <TableCell className="flex items-center">
-                <CheckIcon className="h-4 w-4" />
-              </TableCell>
-              <TableCell className="flex gap-2">
-                <Button className="w-6 h-6" size="icon" variant="ghost">
-                  <FileEditIcon className="w-4 h-4" />
-                  <span className="sr-only">Edit</span>
-                </Button>
-                <Button className="w-6 h-6" size="icon" variant="ghost">
-                  <TrashIcon className="w-4 h-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="space-y-1">
-                <Checkbox id="select-2" />
-              </TableCell>
-              <TableCell className="font-medium">Code Review</TableCell>
-              <TableCell>Review pull requests and provide feedback</TableCell>
-              <TableCell className="font-medium">2023-07-12</TableCell>
-              <TableCell className="font-medium">3:00 PM</TableCell>
-              <TableCell className="font-medium">1h</TableCell>
-              <TableCell className="font-medium">Medium</TableCell>
-              <TableCell className="font-medium">Medium</TableCell>
-              <TableCell className="font-medium">Development</TableCell>
-              <TableCell className="flex items-center">
-                <CheckIcon className="h-4 w-4" />
-              </TableCell>
-              <TableCell className="flex gap-2">
-                <Button className="w-6 h-6" size="icon" variant="ghost">
-                  <FileEditIcon className="w-4 h-4" />
-                  <span className="sr-only">Edit</span>
-                </Button>
-                <Button className="w-6 h-6" size="icon" variant="ghost">
-                  <TrashIcon className="w-4 h-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="space-y-1">
-                <Checkbox id="select-3" />
-              </TableCell>
-              <TableCell className="font-medium">Bug Fixes</TableCell>
-              <TableCell>Address reported issues and bugs</TableCell>
-              <TableCell className="font-medium">2023-07-15</TableCell>
-              <TableCell className="font-medium">11:00 AM</TableCell>
-              <TableCell className="font-medium">3h</TableCell>
-              <TableCell className="font-medium">Low</TableCell>
-              <TableCell className="font-medium">High</TableCell>
-              <TableCell className="font-medium">Quality</TableCell>
-              <TableCell className="flex items-center">
-                <CheckIcon className="h-4 w-4" />
-              </TableCell>
-              <TableCell className="flex gap-2">
-                <Button className="w-6 h-6" size="icon" variant="ghost">
-                  <FileEditIcon className="w-4 h-4" />
-                  <span className="sr-only">Edit</span>
-                </Button>
-                <Button className="w-6 h-6" size="icon" variant="ghost">
-                  <TrashIcon className="w-4 h-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="space-y-1">
-                <Checkbox id="select-4" />
-              </TableCell>
-              <TableCell className="font-medium">Client Meeting</TableCell>
-              <TableCell>
-                Discuss project requirements and deliverables
-              </TableCell>
-              <TableCell className="font-medium">2023-07-18</TableCell>
-              <TableCell className="font-medium">2:00 PM</TableCell>
-              <TableCell className="font-medium">1h</TableCell>
-              <TableCell className="font-medium">High</TableCell>
-              <TableCell className="font-medium">Low</TableCell>
-              <TableCell className="font-medium">Meetings</TableCell>
-              <TableCell className="flex items-center">
-                <CheckIcon className="h-4 w-4" />
-              </TableCell>
-              <TableCell className="flex gap-2">
-                <Button className="w-6 h-6" size="icon" variant="ghost">
-                  <FileEditIcon className="w-4 h-4" />
-                  <span className="sr-only">Edit</span>
-                </Button>
-                <Button className="w-6 h-6" size="icon" variant="ghost">
-                  <TrashIcon className="w-4 h-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="space-y-1">
-                <Checkbox id="select-5" />
-              </TableCell>
-              <TableCell className="font-medium">Task Assignment</TableCell>
-              <TableCell>Assign tasks to team members</TableCell>
-              <TableCell className="font-medium">2023-07-20</TableCell>
-              <TableCell className="font-medium">10:00 AM</TableCell>
-              <TableCell className="font-medium">1h</TableCell>
-              <TableCell className="font-medium">Medium</TableCell>
-              <TableCell className="font-medium">Medium</TableCell>
-              <TableCell className="font-medium">Management</TableCell>
-              <TableCell className="flex items-center">
-                <CheckIcon className="h-4 w-4" />
-              </TableCell>
-              <TableCell className="flex gap-2">
-                <Button className="w-6 h-6" size="icon" variant="ghost">
-                  <FileEditIcon className="w-4 h-4" />
-                  <span className="sr-only">Edit</span>
-                </Button>
-                <Button className="w-6 h-6" size="icon" variant="ghost">
-                  <TrashIcon className="w-4 h-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </div>
+    <div className="max-w-md w-full mx-auto grid gap-4">
+      <Accordion type="single" collapsible>
+        {tasks.map((task: any) => (
+          <AccordionItem key={task.id} value={task.id}>
+            <AccordionTrigger
+              style={{
+                textDecoration: "none",
+                color: task.completed ? "gray" : "black",
+              }}
+            >
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={task.id}
+                  onChange={undefined}
+                  checked={task.completed}
+                />
+                <span className="font-medium">{task.title}</span>
+              </div>
+              <div className="ml-auto mx-2 flex space-x-2">
+                <Link to={`/edit-task/${task.id}`}>
+                  <PencilIcon className="w-4 h-4 text-blue-500 cursor-pointer" />
+                </Link>
+
+                <button onClick={() => handleDeleteTask(task.id)}>
+                  <TrashIcon className="w-4 h-4 text-red-500 cursor-pointer" />
+                </button>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="grid gap-2">
+                <p className="text-sm">{task.description}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Due by {task.dueDate}
+                </p>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
     </div>
   )
 }
 
-function CheckIcon(props: any) {
+function PencilIcon(props: any) {
   return (
     <svg
       {...props}
@@ -183,28 +112,8 @@ function CheckIcon(props: any) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  )
-}
-
-function FileEditIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4 13.5V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2h-5.5" />
-      <polyline points="14 2 14 8 20 8" />
-      <path d="M10.42 12.61a2.1 2.1 0 1 1 2.97 2.97L7.95 21 4 22l.99-3.95 5.43-5.44Z" />
+      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+      <path d="m15 5 4 4" />
     </svg>
   )
 }

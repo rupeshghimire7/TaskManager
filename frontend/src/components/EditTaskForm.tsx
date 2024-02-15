@@ -1,8 +1,4 @@
 import { useState, useEffect } from "react"
-import * as z from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import {
@@ -16,6 +12,8 @@ import { getToken } from "@/lib/helpers/localStorage"
 import { Textarea } from "./ui/textarea"
 import { toast } from "sonner"
 import axiosInstance from "@/lib/utils/api"
+import { Label } from "./ui/label"
+import { useNavigate } from "react-router-dom"
 
 interface EditTaskFormProps {
   taskId: string
@@ -29,19 +27,31 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
     description: "",
     dueDate: "",
     category: "",
+    estCompletion: "",
+    importance: "",
+    complexity: "",
+    isCompleted: false,
   }
+  const [categories, setCategories] = useState([])
+  const [formData, setFormData] = useState(initialTask)
+  const navigate = useNavigate()
 
-  const taskSchema = z.object({
-    title: z.string().min(3).max(50),
-    description: z.string().max(300),
-    dueDate: z.string(),
-    category: z.string(),
-  })
-
-  const form = useForm<z.infer<typeof taskSchema>>({
-    resolver: zodResolver(taskSchema),
-    defaultValues: initialTask,
-  })
+  useEffect(() => {
+    axiosInstance
+      .get("/tasks/category/", {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      })
+      .then((res) => res.data)
+      .then((data) => {
+        setCategories(data?.categories)
+      })
+      .catch((error) => {
+        console.error("Error:", error)
+        toast.error("Error fetching categories")
+      })
+  }, [])
 
   useEffect(() => {
     axiosInstance
@@ -53,7 +63,16 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
       .then((res) => res.data)
       .then((data) => {
         setTask(data)
-        form.reset(data)
+        setFormData({
+          title: data.title,
+          description: data.description,
+          dueDate: data.due_date,
+          category: data.category,
+          estCompletion: data.est_completion,
+          importance: data.importance,
+          complexity: data.complexity,
+          isCompleted: data.is_completed,
+        })
       })
       .catch((error) => {
         console.error("Error:", error)
@@ -61,17 +80,20 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
       })
   }, [taskId])
 
-  function onEditTask(values: z.infer<typeof taskSchema>) {
-    console.log(values)
-
+  function onEditTask(e: any) {
+    e.preventDefault()
     axiosInstance
       .put(
         `/tasks/update/${taskId}/`,
         {
-          title: values.title,
-          description: values.description,
-          due_date: values.dueDate,
-          category: values.category,
+          title: formData.title,
+          description: formData.description,
+          due_date: formData.dueDate,
+          category: formData.category,
+          est_completion: formData.estCompletion,
+          importance: formData.importance,
+          complexity: formData.complexity,
+          is_completed: formData.isCompleted,
         },
         {
           headers: {
@@ -83,7 +105,8 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
       .then((data) => {
         console.log(data)
         toast.success("Task updated successfully")
-        form.reset()
+        setFormData(initialTask)
+        navigate(`/`)
       })
       .catch((error) => {
         console.error("Error:", error)
@@ -97,76 +120,106 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onEditTask)}
-        className="p-4 bg-white rounded-md "
-      >
+    <div>
+      <form onSubmit={onEditTask} className="p-4 bg-white rounded-md ">
         <div className="grid grid-cols-1 max-w-xl mx-auto gap-4">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Task</FormLabel>
-                <FormControl>
-                  <Input type={"text"} placeholder={"Enter task"} {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+          <>
+            <Label>Task</Label>
+            <div>
+              <Input
+                type="text"
+                placeholder="Enter task"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+              />
+            </div>
+          </>
 
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  {...field}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="work">Work</SelectItem>
-                    <SelectItem value="personal">Personal</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dueDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Due Date</FormLabel>
-                <FormControl>
-                  <Input type={"date"} {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+          <div>
+            <Label>Estimated Completion</Label>
+            <div>
+              <Input
+                type="number"
+                placeholder="Enter days [1-30]"
+                value={formData.estCompletion}
+                onChange={(e) =>
+                  setFormData({ ...formData, estCompletion: e.target.value })
+                }
+              />
+            </div>
+          </div>
 
-          <div className="">
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder={"Enter description"} {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+          <div>
+            <Label>Importance</Label>
+            <div>
+              <Input
+                type="number"
+                placeholder="Enter  [1-10]"
+                value={formData.importance}
+                onChange={(e) =>
+                  setFormData({ ...formData, importance: e.target.value })
+                }
+              />
+            </div>
+          </div>
+          <div>
+            <Label>Complexity</Label>
+            <div>
+              <Input
+                type="number"
+                placeholder="Enter  [1-10]"
+                value={formData.complexity}
+                onChange={(e) =>
+                  setFormData({ ...formData, complexity: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="category">Category</Label>
+            <select
+              className="block w-full px-2 bg-transparent py-3 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 sm:text-sm"
+              name="category"
+              value={formData.category}
+              onChange={(e: any) =>
+                setTask({ ...formData, category: e.target.value })
+              }
+            >
+              {categories.map((category, index) => (
+                <option key={index} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <Label>Due Date</Label>
+            <div>
+              <Input
+                type="date"
+                value={formData.dueDate}
+                onChange={(e) =>
+                  setFormData({ ...formData, dueDate: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label>Description</Label>
+            <div>
+              <Textarea
+                placeholder="Enter description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+              />
+            </div>
           </div>
 
           <Button type="submit" className="mt-4 mb-2 bg-green-600 float-right">
@@ -174,7 +227,7 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
           </Button>
         </div>
       </form>
-    </Form>
+    </div>
   )
 }
 

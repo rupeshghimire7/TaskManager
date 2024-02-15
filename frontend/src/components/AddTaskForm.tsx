@@ -5,14 +5,9 @@ import axiosInstance from "@/lib/utils/api"
 import { Input } from "./ui/input"
 import { Textarea } from "./ui/textarea"
 import { Button } from "./ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select"
+
 import { Label } from "./ui/label"
+import { useNavigate } from "react-router-dom"
 
 const AddTaskForm = () => {
   const [task, setTask] = useState({
@@ -26,6 +21,7 @@ const AddTaskForm = () => {
   })
 
   const [categories, setCategories] = useState([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     axiosInstance
@@ -77,6 +73,7 @@ const AddTaskForm = () => {
           complexity: 1,
           category: "",
         })
+        navigate(`/`)
       })
       .catch((error) => {
         console.error("Error:", error)
@@ -102,25 +99,21 @@ const AddTaskForm = () => {
         </div>
         <div>
           <Label htmlFor="category">Category</Label>
-          <Select
+          <select
+            className="block w-full px-2 bg-transparent py-3 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 sm:text-sm"
             name="category"
-            value={task.category}
-            onValueChange={(e: any) =>
+            value={task.category || "Others"}
+            onChange={(e: any) =>
               setTask({ ...task, category: e.target.value })
             }
+            required
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Select a category" />
-            </SelectTrigger>
-
-            <SelectContent>
-              {categories.map((category, index) => (
-                <SelectItem key={index} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {categories.map((category, index) => (
+              <option key={index} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <Label htmlFor="dueDate">Due Date</Label>
