@@ -14,9 +14,7 @@ import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
 import { Helmet } from "react-helmet"
 import * as z from "zod"
-import {toast} from 'sonner'
-// import useSWR from "swr"
-// import { postFetcher } from "@/lib/utils/axiosFetchers"
+import { toast } from "sonner"
 import axiosInstance from "@/lib/utils/api"
 import { AuthContext } from "@/lib/context/authContext"
 
@@ -27,7 +25,7 @@ const loginFormSchema = z.object({
 
 const Login = () => {
   // const [passwordView, setPasswordView] = useState<Boolean>(false)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -40,9 +38,9 @@ const Login = () => {
   const { saveUser, isLoggedIn, saveLoginStatus } = useContext(AuthContext)
   async function onSubmitLoginForm(values: z.infer<typeof loginFormSchema>) {
     try {
-      const response = await axiosInstance.post('/users/login/', values)
+      const response = await axiosInstance.post("/users/login/", values)
       console.log(response.data)
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("token", response.data.token)
       // Fetch user data based on the token
       axiosInstance
         .get("/users/profile/", {
@@ -51,16 +49,15 @@ const Login = () => {
           },
         })
         .then((response) => {
-          saveUser(response.data);
-          saveLoginStatus(true);
+          saveUser(response.data)
+          saveLoginStatus(true)
           toast.success("Logged In Successfully!!!")
         })
         .catch((error) => {
-          console.error("Error fetching user:", error);
+          console.error("Error fetching user:", error)
           toast.error("Failed to login!!!")
-        });
-    }
-    catch (error) {
+        })
+    } catch (error) {
       console.log(error)
     }
   }
@@ -69,10 +66,9 @@ const Login = () => {
   //   setPasswordView(!passwordView)
   // }
 
-
   useEffect(() => {
     if (isLoggedIn) {
-      navigate('/')
+      navigate("/")
     }
   }, [isLoggedIn])
 
