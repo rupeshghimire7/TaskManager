@@ -16,6 +16,7 @@ import { Helmet } from "react-helmet"
 import axiosInstance from "@/lib/utils/api"
 import { useContext, useEffect } from "react"
 import { AuthContext } from "@/lib/context/authContext"
+import { toast } from "sonner"
 
 
 const registerFormSchema = z.object({
@@ -27,6 +28,8 @@ const registerFormSchema = z.object({
 })
 
 const Register = () => {
+  const navigate = useNavigate();
+  const {isLoggedIn} = useContext(AuthContext)
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -43,13 +46,16 @@ const Register = () => {
       const { email, name, username, password } = values
       const response = await axiosInstance.post('/users/register/', { email, name, username, password })
       console.log("form Submitted", response.data)
+      navigate('/login')
+      toast.success("Registered Successfully!!!")
+
+
     } catch (error) {
       console.log("Register", error)
+      toast.error("Failed to register!!!")
     }
   }
 
-  const {isLoggedIn} = useContext(AuthContext)
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (isLoggedIn) {

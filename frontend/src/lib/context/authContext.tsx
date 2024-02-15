@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext } from "react";
 import axiosInstance from "../utils/api";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export const AuthContext = createContext({ user: {}, saveUser: (currentUser: any) => { }, isLoggedIn: false, saveLoginStatus: (status: boolean) => { }, logout: () => { } });
 
@@ -47,6 +48,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser({});
     setIsLoggedIn(false);
     navigate('/login')
+    toast.success("Logged Out Successfully!!!")
   };
 
   return (
