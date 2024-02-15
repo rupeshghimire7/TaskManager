@@ -84,7 +84,7 @@ const AddTaskForm = () => {
         console.error("Error:", error)
         toast.error("Error adding task")
       })
-      .finally(() => {})
+      .finally(() => { })
   }
 
   const [categories, setCategories] = useState([])
@@ -185,7 +185,7 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Estimated Completion (in days [1-30])</FormLabel>
                 <FormControl>
-                  <Input type={"number"} max={30} min={1} {...field} />
+                  <Input type={"number"} {...field} inputMode="numeric" min={1} max={30} />
                 </FormControl>
               </FormItem>
             )}
@@ -197,7 +197,7 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Importance [1-10]</FormLabel>
                 <FormControl>
-                  <Input type={"number"} max={10} min={1} {...field} />
+                  <Input type={"number"} {...field} inputMode="numeric" min={1} max={10} />
                 </FormControl>
               </FormItem>
             )}
@@ -209,7 +209,7 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Complexity [1-10]</FormLabel>
                 <FormControl>
-                  <Input type={"number"} max={10} min={1} {...field} />
+                  <Input type={"number"} {...field} inputMode="numeric" min={1} max={10} />
                 </FormControl>
               </FormItem>
             )}
@@ -221,7 +221,7 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Priority [1-10]</FormLabel>
                 <FormControl>
-                  <Input type={"number"} max={10} min={1} {...field} />
+                  <Input type={"number"} {...field} inputMode="numeric" min={1} max={10} />
                 </FormControl>
               </FormItem>
             )}
