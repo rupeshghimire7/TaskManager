@@ -26,6 +26,7 @@ const loginFormSchema = z.object({
 
 const Login = () => {
   // const [passwordView, setPasswordView] = useState<Boolean>(false)
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -35,10 +36,26 @@ const Login = () => {
     },
   })
 
+  const { saveUser, isLoggedIn, saveLoginStatus } = useContext(AuthContext)
   async function onSubmitLoginForm(values: z.infer<typeof loginFormSchema>) {
     try {
       const response = await axiosInstance.post('/users/login/', values)
       console.log(response.data)
+      localStorage.setItem("token", response.data.token);
+      // Fetch user data based on the token
+      axiosInstance
+        .get("/users/profile/", {
+          headers: {
+            Authorization: `Bearer ${response.data.token}`,
+          },
+        })
+        .then((response) => {
+          saveUser(response.data);
+          saveLoginStatus(true);
+        })
+        .catch((error) => {
+          console.error("Error fetching user:", error);
+        });
     }
     catch (error) {
       console.log(error)
@@ -49,8 +66,6 @@ const Login = () => {
   //   setPasswordView(!passwordView)
   // }
 
-  const { isLoggedIn } = useContext(AuthContext)
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (isLoggedIn) {

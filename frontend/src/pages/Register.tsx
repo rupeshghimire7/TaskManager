@@ -48,7 +48,7 @@ const Register = () => {
     }
   }
 
-  const isLoggedIn = useContext(AuthContext)
+  const {isLoggedIn} = useContext(AuthContext)
   const navigate = useNavigate();
 
   useEffect(() => {

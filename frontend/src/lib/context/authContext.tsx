@@ -1,17 +1,27 @@
 import { useState, useEffect, createContext } from "react";
 import axiosInstance from "../utils/api";
+import { useNavigate } from "react-router-dom";
 
-export const AuthContext = createContext({ user: {}, isLoggedIn: false, login: (token: string) => { }, logout: () => { } });
+export const AuthContext = createContext({ user: {}, saveUser: (currentUser: any) => { }, isLoggedIn: false, saveLoginStatus: (status: boolean) => { }, logout: () => { } });
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate()
+
+  const saveUser = (currentUser: any) => {
+    setUser(currentUser)
+  }
+
+  const saveLoginStatus = (status: boolean) => {
+    setIsLoggedIn(status)
+  }
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
       axiosInstance
-        .get("/user", {
+        .get("/users/profile/", {
           headers: {
             Authorization: `Bearer ${storedToken}`,
           },
@@ -20,29 +30,17 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(response.data);
           setIsLoggedIn(true);
         })
+
         .catch((error) => {
           console.error("Error fetching user:", error);
         });
     }
+    else {
+      navigate('/login')
+    }
   }, []);
 
-  const login = (token: string) => {
-    localStorage.setItem("token", token);
-    // Fetch user data based on the token
-    axiosInstance
-      .get("/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setUser(response.data);
-        setIsLoggedIn(true);
-      })
-      .catch((error) => {
-        console.error("Error fetching user:", error);
-      });
-  };
+
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -52,7 +50,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <AuthContext.Provider value={{ user, isLoggedIn, login, logout }}>
+      <AuthContext.Provider value={{ user, saveUser, isLoggedIn, saveLoginStatus, logout }}>
         {children}
       </AuthContext.Provider>
     </>
