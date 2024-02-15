@@ -23,25 +23,21 @@ class Task(models.Model):
     title = models.CharField(max_length=200, null=False, blank=False)
     description = models.TextField(max_length=10000, null=True, blank=True)
 
-    due_date = models.DateField()  # date
-    due_time = models.TimeField()  # time
-    est_completion = models.IntegerField(
-        choices=[(i, str(i)) for i in range(1, 31)],
-        default=1,
-        help_text="Estimated days for completion, Range: 1-30",
-    )
+    due_date = models.DateTimeField()  # date
+
+    est_completion = models.IntegerField(default=5) # 1 to 30 range
 
     # dropdown range 1-10
-    importance = models.IntegerField(
-        choices=[(i, str(i)) for i in range(1, 11)],
-        default=1,
-        help_text="Importance of the task, Range: 1-10",
-    )
-    complexity = models.IntegerField(
-        choices=[(i, str(i)) for i in range(1, 11)],
-        default=1,
-        help_text="Complexity of the task, Range: 1-10",
-    )
+    importance = models.IntegerField(default=1)
+        # choices=[(i, str(i)) for i in range(1, 11)],
+        # default=1,
+        # help_text="Importance of the task, Range: 1-10",
+    
+    complexity = models.IntegerField(default=1)
+    #     choices=[(i, str(i)) for i in range(1, 11)],
+    #     default=1,
+    #     help_text="Complexity of the task, Range: 1-10",
+    # )
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     # dropdown
 
