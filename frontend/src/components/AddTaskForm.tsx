@@ -23,7 +23,6 @@ const AddTaskForm = () => {
     title: "",
     description: "",
     dueDate: "",
-    dueTime: "",
     estCompletion: 1,
     importance: 1,
     complexity: 1,
@@ -36,19 +35,25 @@ const AddTaskForm = () => {
     title: z.string().min(3, "Min 3").max(50, "Max 50"),
     description: z.string().max(300, "Max 300"),
     dueDate: z.string(),
-    dueTime: z.string(),
-
     estCompletion: z.preprocess(
       (a) => parseInt(z.string().parse(a), 10),
-      z.number().positive().min(1)
+      z.number().positive().min(1, "Min 1").max(30, "Max 30")
+    ),
+    importance: z.preprocess(
+      (a) => parseInt(z.string().parse(a), 10),
+      z.number().positive().min(1, "Min 1").max(10, "Max 10")
+    ),
+    complexity: z.preprocess(
+      (a) => parseInt(z.string().parse(a), 10),
+      z.number().positive().min(1, "Min 1").max(10, "Max 10")
     ),
 
-    // estCompletion: z.number().min(1, "Min 1").max(30, "Max 30").int(),
-    importance: z.number().min(1, "Min 1").max(10, "Max 10").int(),
-    complexity: z.number().min(1, "Min 1").max(10, "Max 10").int(),
     category: z.string(),
     isCompleted: z.boolean(),
-    priority: z.number().min(1, "Min 1").max(10, "Max 10").int(),
+    priority: z.preprocess(
+      (a) => parseInt(z.string().parse(a), 10),
+      z.number().positive().min(1, "Min 1").max(10, "Max 10")
+    ),
   })
 
   const form = useForm<z.infer<typeof taskSchema>>({
@@ -66,7 +71,6 @@ const AddTaskForm = () => {
           title: values.title,
           description: values.description,
           due_date: values.dueDate,
-          due_time: values.dueTime,
           est_completion: values.estCompletion,
           importance: values.importance,
           complexity: values.complexity,
@@ -171,18 +175,7 @@ const AddTaskForm = () => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="dueTime"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Due Time</FormLabel>
-                <FormControl>
-                  <Input type={"time"} {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+
           <FormField
             control={form.control}
             name="estCompletion"

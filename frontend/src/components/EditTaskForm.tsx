@@ -29,7 +29,6 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
     title: "",
     description: "",
     dueDate: "",
-    dueTime: "",
     estCompletion: 1,
     importance: 1,
     complexity: 1,
