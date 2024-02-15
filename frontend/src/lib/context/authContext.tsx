@@ -46,6 +46,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("token");
     setUser({});
     setIsLoggedIn(false);
+    navigate('/login')
   };
 
   return (

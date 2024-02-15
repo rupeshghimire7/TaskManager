@@ -30,9 +30,9 @@ const Navbar = () => {
                 <div className='flex items-center justify-end'>
                     <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                         <DropdownMenuTrigger>
-                            <div className="flex items-center justify-center">
+                            <div className="flex items-center justify-center outline-none border-none">
                                 {user && <span className="ml-2 px-3 font-semibold">{user.name}</span>}
-                                <button onClick={handleMenuToggle}>
+                                <button className="border-none outline-none" onClick={handleMenuToggle}>
                                     <Avatar>
                                         <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                                         <AvatarFallback>RG</AvatarFallback>

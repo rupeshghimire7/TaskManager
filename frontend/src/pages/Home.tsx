@@ -2,7 +2,7 @@ import axiosInstance from "@/lib/utils/api"
 import { useEffect, useState } from "react"
 import { Task } from "@/lib/types/task"
 import { getToken } from "@/lib/helpers/localStorage"
-import Navbar from "@/components/Navbar/Navbar"
+import Layout from "@/components/Layout/Layout"
 
 const Home = () => {
   const [taskList, setTaskList] = useState<[]>([])
@@ -18,15 +18,17 @@ const Home = () => {
   }, [])
 
   return (
-    <div>
-      <Navbar />
-      <div>Task</div>
+
+    <Layout >
       <div>
-        {taskList.map((task: Task) => (
-          <div key={task?.title}>{task?.title}</div>
-        ))}
+        <div>Task</div>
+        <div>
+          {taskList.map((task: Task) => (
+            <div key={task?.title}>{task?.title}</div>
+          ))}
+        </div>
       </div>
-    </div>
+    </Layout>
   )
 }
 
