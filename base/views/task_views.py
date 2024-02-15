@@ -72,6 +72,8 @@ def get_category_value(value):
 
 def days_remaining(due_date):
     today = timezone.now().date()
+    print("Today:",today)
+    print("DUE DATE:", due_date)
     remaining_days = (due_date - today).days
     return max(remaining_days, -1)
 
