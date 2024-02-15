@@ -2,6 +2,7 @@ from pathlib import Path
 import joblib
 import os
 from django.utils import timezone
+from datetime import datetime
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -12,6 +13,9 @@ from base.models import Task
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from base.serializers import TaskSerializer
+
+from rest_framework.exceptions import AuthenticationFailed
+from django.http import JsonResponse
 
 
 # ----------------------------------- LOAD MODEL --------------------------------------------------------------------
@@ -78,7 +82,7 @@ def days_remaining(due_date):
 @permission_classes([IsAuthenticated])
 def getTasks(request):
     user = request.user
-    tasks = Task.objects.filter(user=user).order_by("-priority")
+    tasks = Task.objects.filter(user=user).order_by('-priority')
     tasks = sorted(tasks)
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -101,8 +105,8 @@ def createTask(request):
         user=user,
         title=data["title"],
         description=data["description"],
-        due_date=data["due_date"],
-        due_time=data["due_time"],
+        due_date = datetime.strptime(data["due_date"], "%Y-%m-%d").date(),
+        due_time = datetime.strptime(data["due_time"], "%H:%M").time(),
         est_completion=data["est_completion"],
         importance=data["importance"],
         complexity=data["complexity"],
