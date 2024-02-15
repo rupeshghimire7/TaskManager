@@ -9,14 +9,15 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
-// import { useState } from "react"
+import { useEffect, useContext } from "react"
 import { useForm } from "react-hook-form"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Helmet } from "react-helmet"
 import * as z from "zod"
 // import useSWR from "swr"
 // import { postFetcher } from "@/lib/utils/axiosFetchers"
 import axiosInstance from "@/lib/utils/api"
+import { AuthContext } from "@/lib/context/authContext"
 
 const loginFormSchema = z.object({
   username: z.string().min(3).max(50),
@@ -47,6 +48,15 @@ const Login = () => {
   // function togglePasswordView() {
   //   setPasswordView(!passwordView)
   // }
+
+  const { isLoggedIn } = useContext(AuthContext)
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/')
+    }
+  }, [isLoggedIn])
 
   return (
     <>
