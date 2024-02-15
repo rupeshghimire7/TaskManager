@@ -41,9 +41,15 @@ const Navbar = () => {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent>
-              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem className="flex flex-col gap-1">
+                <p className="font-semibold">{user?.username}</p>
+                <p className="text-gray-500 text-sm">{user?.email}</p>
+              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={logout} className="text-red-500">
+                Logout
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
