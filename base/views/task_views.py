@@ -192,7 +192,6 @@ def deleteTask(request, pk):
 # ----------------------------------- Categories list api ---------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------
 @api_view(["GET"])  # api call with http method - DELETE
-# @permission_classes([IsAuthenticated])
 def category_list(request):
     CATEGORY_CHOICES = [
         "Health", 
