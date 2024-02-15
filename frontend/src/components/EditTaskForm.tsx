@@ -1,4 +1,5 @@
 import { Task } from "@/lib/types/task"
+import { useState, useEffect } from "react"
 import * as z from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -17,7 +18,13 @@ import { Textarea } from "./ui/textarea"
 import { toast } from "sonner"
 import axiosInstance from "@/lib/utils/api"
 
-const AddTaskForm = () => {
+interface EditTaskProps {
+  taskId: string
+}
+
+const EditTaskForm: React.FC<EditTaskProps> = ({ taskId }) => {
+  const [task, setTask] = useState<Task | null>(null)
+
   const initialTask: Task = {
     title: "",
     description: "",
@@ -49,23 +56,36 @@ const AddTaskForm = () => {
     defaultValues: initialTask,
   })
 
-  function onAddTask(values: z.infer<typeof taskSchema>) {
+  useEffect(() => {
+    axiosInstance
+      .get(`/tasks/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      })
+      .then((res) => res.data)
+      .then((data) => {
+        setTask(data)
+        form.reset(data)
+      })
+      .catch((error) => {
+        console.error("Error:", error)
+        toast.error("Error fetching task")
+      })
+  }, [taskId])
+
+  function onEditTask(values: z.infer<typeof taskSchema>) {
     console.log(values)
 
     axiosInstance
-      .post(
-        "/tasks/create/",
+      .put(
+        `/tasks/update/${taskId}/`,
         {
           title: values.title,
           description: values.description,
           due_date: values.dueDate,
           due_time: values.dueTime,
-          est_completion: values.estCompletion,
-          importance: values.importance,
-          complexity: values.complexity,
           category: values.category,
-          is_completed: values.isCompleted,
-          priority: values.priority,
         },
         {
           headers: {
@@ -76,20 +96,24 @@ const AddTaskForm = () => {
       .then((res) => res.data)
       .then((data) => {
         console.log(data)
-        toast.success("Task added successfully")
+        toast.success("Task updated successfully")
         form.reset()
       })
       .catch((error) => {
         console.error("Error:", error)
-        toast.error("Error adding task")
+        toast.error("Error updating task")
       })
       .finally(() => {})
+  }
+
+  if (!task) {
+    return <div>Loading...</div>
   }
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onAddTask)}
+        onSubmit={form.handleSubmit(onEditTask)}
         className="p-4 bg-white rounded-md "
       >
         <div className="grid grid-cols-2 items-start gap-4">
@@ -155,54 +179,7 @@ const AddTaskForm = () => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="estCompletion"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Estimated Completion (in days [1-30])</FormLabel>
-                <FormControl>
-                  <Input type={"number"} {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="importance"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Importance [1-10]</FormLabel>
-                <FormControl>
-                  <Input type={"number"} {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="complexity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Complexity [1-10]</FormLabel>
-                <FormControl>
-                  <Input type={"number"} {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="priority"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Priority [1-10]</FormLabel>
-                <FormControl>
-                  <Input type={"number"} {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+
           <div className="col-start-1 col-end-3">
             <FormField
               control={form.control}
@@ -220,11 +197,11 @@ const AddTaskForm = () => {
         </div>
 
         <Button type="submit" className="mt-4 mb-2 bg-green-600 float-right">
-          Create Task
+          Update Task
         </Button>
       </form>
     </Form>
   )
 }
 
-export default AddTaskForm
+export default EditTaskForm
