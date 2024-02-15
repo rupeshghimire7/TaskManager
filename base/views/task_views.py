@@ -186,3 +186,26 @@ def deleteTask(request, pk):
     task = get_object_or_404(Task, user=request.user, id=pk)
     task.delete()
     return Response("Task deleted")
+
+
+
+# ----------------------------------- Categories list api ---------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------------------
+@api_view(["GET"])  # api call with http method - DELETE
+# @permission_classes([IsAuthenticated])
+def category_list(request):
+    CATEGORY_CHOICES = [
+        "Health", 
+        "Family", 
+        "work",
+        "Finance",      
+        "Education",
+        "Personal", 
+        "Career", 
+        "Social", 
+        "Household Errands", 
+        "Entertainment",
+        "Others",
+    ]
+
+    return Response({"CATEGORIES":CATEGORY_CHOICES})
