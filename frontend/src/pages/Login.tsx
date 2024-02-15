@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
 import { Helmet } from "react-helmet"
 import * as z from "zod"
+import {toast} from 'sonner'
 // import useSWR from "swr"
 // import { postFetcher } from "@/lib/utils/axiosFetchers"
 import axiosInstance from "@/lib/utils/api"
@@ -52,9 +53,11 @@ const Login = () => {
         .then((response) => {
           saveUser(response.data);
           saveLoginStatus(true);
+          toast.success("Logged In Successfully!!!")
         })
         .catch((error) => {
           console.error("Error fetching user:", error);
+          toast.error("Failed to login!!!")
         });
     }
     catch (error) {
