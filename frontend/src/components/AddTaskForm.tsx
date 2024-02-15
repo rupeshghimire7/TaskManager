@@ -37,7 +37,13 @@ const AddTaskForm = () => {
     description: z.string().max(300, "Max 300"),
     dueDate: z.string(),
     dueTime: z.string(),
-    estCompletion: z.number().min(1, "Min 1").max(30, "Max 30").int(),
+
+    estCompletion: z.preprocess(
+      (a) => parseInt(z.string().parse(a), 10),
+      z.number().positive().min(1)
+    ),
+
+    // estCompletion: z.number().min(1, "Min 1").max(30, "Max 30").int(),
     importance: z.number().min(1, "Min 1").max(10, "Max 10").int(),
     complexity: z.number().min(1, "Min 1").max(10, "Max 10").int(),
     category: z.string(),
@@ -84,7 +90,7 @@ const AddTaskForm = () => {
         console.error("Error:", error)
         toast.error("Error adding task")
       })
-      .finally(() => { })
+      .finally(() => {})
   }
 
   const [categories, setCategories] = useState([])
@@ -98,8 +104,7 @@ const AddTaskForm = () => {
       })
       .then((res) => res.data)
       .then((data) => {
-        console.log(data)
-        setCategories(data)
+        setCategories(data?.categories)
       })
       .catch((error) => {
         console.error("Error:", error)
@@ -185,7 +190,13 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Estimated Completion (in days [1-30])</FormLabel>
                 <FormControl>
-                  <Input type={"number"} {...field} inputMode="numeric" min={1} max={30} />
+                  <Input
+                    type={"number"}
+                    {...field}
+                    inputMode="numeric"
+                    min={1}
+                    max={30}
+                  />
                 </FormControl>
               </FormItem>
             )}
@@ -197,7 +208,13 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Importance [1-10]</FormLabel>
                 <FormControl>
-                  <Input type={"number"} {...field} inputMode="numeric" min={1} max={10} />
+                  <Input
+                    type={"number"}
+                    {...field}
+                    inputMode="numeric"
+                    min={1}
+                    max={10}
+                  />
                 </FormControl>
               </FormItem>
             )}
@@ -209,7 +226,13 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Complexity [1-10]</FormLabel>
                 <FormControl>
-                  <Input type={"number"} {...field} inputMode="numeric" min={1} max={10} />
+                  <Input
+                    type={"number"}
+                    {...field}
+                    inputMode="numeric"
+                    min={1}
+                    max={10}
+                  />
                 </FormControl>
               </FormItem>
             )}
@@ -221,7 +244,13 @@ const AddTaskForm = () => {
               <FormItem>
                 <FormLabel>Priority [1-10]</FormLabel>
                 <FormControl>
-                  <Input type={"number"} {...field} inputMode="numeric" min={1} max={10} />
+                  <Input
+                    type={"number"}
+                    {...field}
+                    inputMode="numeric"
+                    min={1}
+                    max={10}
+                  />
                 </FormControl>
               </FormItem>
             )}

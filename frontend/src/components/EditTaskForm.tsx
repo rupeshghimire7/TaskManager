@@ -18,11 +18,11 @@ import { Textarea } from "./ui/textarea"
 import { toast } from "sonner"
 import axiosInstance from "@/lib/utils/api"
 
-interface EditTaskProps {
+interface EditTaskFormProps {
   taskId: string
 }
 
-const EditTaskForm: React.FC<EditTaskProps> = ({ taskId }) => {
+const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
   const [task, setTask] = useState<Task | null>(null)
 
   const initialTask: Task = {
