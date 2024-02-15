@@ -9,14 +9,16 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
-// import { useState } from "react"
+import { useEffect, useContext } from "react"
 import { useForm } from "react-hook-form"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Helmet } from "react-helmet"
 import * as z from "zod"
+import {toast} from 'sonner'
 // import useSWR from "swr"
 // import { postFetcher } from "@/lib/utils/axiosFetchers"
 import axiosInstance from "@/lib/utils/api"
+import { AuthContext } from "@/lib/context/authContext"
 
 const loginFormSchema = z.object({
   username: z.string().min(3).max(50),
@@ -25,6 +27,7 @@ const loginFormSchema = z.object({
 
 const Login = () => {
   // const [passwordView, setPasswordView] = useState<Boolean>(false)
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -34,10 +37,28 @@ const Login = () => {
     },
   })
 
+  const { saveUser, isLoggedIn, saveLoginStatus } = useContext(AuthContext)
   async function onSubmitLoginForm(values: z.infer<typeof loginFormSchema>) {
     try {
       const response = await axiosInstance.post('/users/login/', values)
       console.log(response.data)
+      localStorage.setItem("token", response.data.token);
+      // Fetch user data based on the token
+      axiosInstance
+        .get("/users/profile/", {
+          headers: {
+            Authorization: `Bearer ${response.data.token}`,
+          },
+        })
+        .then((response) => {
+          saveUser(response.data);
+          saveLoginStatus(true);
+          toast.success("Logged In Successfully!!!")
+        })
+        .catch((error) => {
+          console.error("Error fetching user:", error);
+          toast.error("Failed to login!!!")
+        });
     }
     catch (error) {
       console.log(error)
@@ -47,6 +68,13 @@ const Login = () => {
   // function togglePasswordView() {
   //   setPasswordView(!passwordView)
   // }
+
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/')
+    }
+  }, [isLoggedIn])
 
   return (
     <>
