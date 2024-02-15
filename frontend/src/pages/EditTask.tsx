@@ -1,8 +1,10 @@
 import EditTaskForm from "@/components/EditTaskForm"
 import Layout from "@/components/Layout/Layout"
+import { useParams } from "react-router-dom"
 
 const EditTask = () => {
-  const taskId = window.location.pathname.split("/")[2]
+  const params = useParams()
+  const taskId = params?.id
   console.log("taskId:", taskId)
 
   return (

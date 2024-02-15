@@ -25,8 +25,8 @@ const Navbar = () => {
         </div>
         <div className="flex items-center justify-end">
           <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-            <DropdownMenuTrigger>
-              <div className="flex items-center justify-center outline-none border-none">
+            <DropdownMenuTrigger className="outline-none ">
+              <div className="flex items-center justify-center ">
                 {user && (
                   <span className="ml-2 px-3 font-semibold">{user.name}</span>
                 )}
