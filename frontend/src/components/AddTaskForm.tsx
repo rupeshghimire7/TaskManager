@@ -1,11 +1,17 @@
 import { Task } from "@/lib/types/task"
 import { useState } from "react"
 import * as z from "zod"
-import { useForm } from "react-hook-form"
+import { set, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
+import { Checkbox } from "./ui/checkbox"
+import { Label } from "./ui/label"
+import { Select, SelectContent, SelectItem } from "./ui/select"
+import { getToken } from "@/lib/helpers/localStorage"
+import { Textarea } from "./ui/textarea"
+import { toast } from "sonner"
 
 const AddTaskForm = () => {
   const initialTask: Task = {
@@ -21,11 +27,17 @@ const AddTaskForm = () => {
     priority: 1,
   }
 
-  const [task, setTask] = useState<Task>(initialTask)
-
   const taskSchema = z.object({
     title: z.string().min(3).max(50),
-    description: z.string().min(8).max(50),
+    description: z.string().max(300),
+    dueDate: z.string(),
+    dueTime: z.string(),
+    estCompletion: z.number().min(1).max(30),
+    importance: z.number().min(1).max(10),
+    complexity: z.number().min(1).max(10),
+    category: z.string(),
+    isCompleted: z.boolean(),
+    priority: z.number().min(1).max(10),
   })
 
   const form = useForm<z.infer<typeof taskSchema>>({
@@ -33,31 +45,27 @@ const AddTaskForm = () => {
     defaultValues: initialTask,
   })
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value } = e.target
-    setTask((prevTask) => ({
-      ...prevTask,
-      [name]: value,
-    }))
-  }
-
   function onAddTask(values: z.infer<typeof taskSchema>) {
     console.log(values)
 
     fetch("/tasks/", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
       },
       body: JSON.stringify(values),
     })
       .then((res) => res.json())
       .then((data) => {
         console.log(data)
+        toast.success("Task added successfully")
+      })
+      .catch((error) => {
+        console.error("Error:", error)
+        toast.error("Error adding task")
+      })
+      .finally(() => {
+        form.reset()
       })
   }
 
@@ -65,140 +73,129 @@ const AddTaskForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onAddTask)}
-        className="flex flex-col items-center gap-4"
+        className="p-4 bg-white rounded-md shadow-md"
       >
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Task</FormLabel>
-              <FormControl>
-                <Input type="email" placeholder="Enter task" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <Button>Add</Button>
-
-        <label>
-          Title:
-          <input
-            type="text"
+        <div className="grid grid-cols-4 items-center gap-4">
+          <FormField
+            control={form.control}
             name="title"
-            value={task.title}
-            onChange={handleChange}
-            required
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Task</FormLabel>
+                <FormControl>
+                  <Input type={"text"} placeholder={"Enter task"} {...field} />
+                </FormControl>
+              </FormItem>
+            )}
           />
-        </label>
-        <br />
-        <label>
-          Description:
-          <textarea
+          <FormField
+            control={form.control}
             name="description"
-            value={task.description}
-            onChange={handleChange}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea placeholder={"Enter description"} {...field} />
+                </FormControl>
+              </FormItem>
+            )}
           />
-        </label>
-        <br />
-        <label>
-          Due Date:
-          <input
-            type="date"
-            name="dueDate"
-            value={task.dueDate}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Due Time:
-          <input
-            type="time"
-            name="dueTime"
-            value={task.dueTime}
-            onChange={handleChange}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Estimated Completion (in days):
-          <input
-            type="number"
-            name="estCompletion"
-            value={task.estCompletion}
-            onChange={handleChange}
-            min="1"
-            max="30"
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Importance:
-          <input
-            type="number"
-            name="importance"
-            value={task.importance}
-            onChange={handleChange}
-            min="1"
-            max="10"
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Complexity:
-          <input
-            type="number"
-            name="complexity"
-            value={task.complexity}
-            onChange={handleChange}
-            min="1"
-            max="10"
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Category:
-          <select
+          <FormField
+            control={form.control}
             name="category"
-            value={task.category}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select a category</option>
-            {/* Add your category options here */}
-          </select>
-        </label>
-        <br />
-        <label>
-          Is Completed:
-          <input
-            type="checkbox"
-            name="isCompleted"
-            checked={task.isCompleted}
-            onChange={handleChange}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <FormControl>
+                  <Select {...field}>
+                    <SelectContent>
+                      <SelectItem value="_">Select a category</SelectItem>
+                    </SelectContent>
+                    <SelectContent>
+                      <SelectItem value="work">Work</SelectItem>
+                      <SelectItem value="personal">Personal</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </FormItem>
+            )}
           />
-        </label>
-        <br />
-        <label>
-          Priority:
-          <input
-            type="number"
+          <FormField
+            control={form.control}
+            name="dueDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Due Date</FormLabel>
+                <FormControl>
+                  <Input type={"date"} {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="dueTime"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Due Time</FormLabel>
+                <FormControl>
+                  <Input type={"time"} {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="estCompletion"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Estimated Completion (in days)</FormLabel>
+                <FormControl>
+                  <Input type={"number"} {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="importance"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Importance</FormLabel>
+                <FormControl>
+                  <Input type={"number"} {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="complexity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Complexity</FormLabel>
+                <FormControl>
+                  <Input type={"number"} {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="priority"
-            value={task.priority}
-            onChange={handleChange}
-            min="1"
-            max="10"
-            required
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Priority</FormLabel>
+                <FormControl>
+                  <Input type={"number"} {...field} />
+                </FormControl>
+              </FormItem>
+            )}
           />
-        </label>
-        <br />
-        <button type="submit">Create Task</button>
+        </div>
+
+        <Button type="submit">Create Task</Button>
       </form>
     </Form>
   )
