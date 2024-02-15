@@ -1,4 +1,3 @@
-import { Task } from "@/lib/types/task"
 import { useState, useEffect } from "react"
 import * as z from "zod"
 import { useForm } from "react-hook-form"
@@ -23,31 +22,20 @@ interface EditTaskFormProps {
 }
 
 const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
-  const [task, setTask] = useState<Task | null>(null)
+  const [task, setTask] = useState<any | null>(null)
 
-  const initialTask: Task = {
+  const initialTask: any = {
     title: "",
     description: "",
     dueDate: "",
-    estCompletion: 1,
-    importance: 1,
-    complexity: 1,
     category: "",
-    isCompleted: false,
-    priority: 1,
   }
 
   const taskSchema = z.object({
     title: z.string().min(3).max(50),
     description: z.string().max(300),
     dueDate: z.string(),
-    dueTime: z.string(),
-    estCompletion: z.number().min(1).max(30),
-    importance: z.number().min(1).max(10),
-    complexity: z.number().min(1).max(10),
     category: z.string(),
-    isCompleted: z.boolean(),
-    priority: z.number().min(1).max(10),
   })
 
   const form = useForm<z.infer<typeof taskSchema>>({
@@ -83,7 +71,6 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
           title: values.title,
           description: values.description,
           due_date: values.dueDate,
-          due_time: values.dueTime,
           category: values.category,
         },
         {
@@ -115,7 +102,7 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
         onSubmit={form.handleSubmit(onEditTask)}
         className="p-4 bg-white rounded-md "
       >
-        <div className="grid grid-cols-2 items-start gap-4">
+        <div className="grid grid-cols-1 max-w-xl mx-auto gap-4">
           <FormField
             control={form.control}
             name="title"
@@ -166,20 +153,8 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="dueTime"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Due Time</FormLabel>
-                <FormControl>
-                  <Input type={"time"} {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
 
-          <div className="col-start-1 col-end-3">
+          <div className="">
             <FormField
               control={form.control}
               name="description"
@@ -193,11 +168,11 @@ const EditTaskForm: React.FC<EditTaskFormProps> = ({ taskId }) => {
               )}
             />
           </div>
-        </div>
 
-        <Button type="submit" className="mt-4 mb-2 bg-green-600 float-right">
-          Update Task
-        </Button>
+          <Button type="submit" className="mt-4 mb-2 bg-green-600 float-right">
+            Update Task
+          </Button>
+        </div>
       </form>
     </Form>
   )

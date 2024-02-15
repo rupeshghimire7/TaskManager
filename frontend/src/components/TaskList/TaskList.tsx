@@ -1,8 +1,3 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/k7b89tv9FK7
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
 import {
   TableHead,
   TableRow,
@@ -14,7 +9,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 
-export default function Component() {
+export default function TaskList() {
   return (
     <div className="border rounded-lg w-full">
       <div className="relative w-full overflow-auto">

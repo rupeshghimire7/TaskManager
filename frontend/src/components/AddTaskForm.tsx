@@ -1,9 +1,9 @@
-import { Task } from "@/lib/types/task"
-import * as z from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form"
+import { useEffect, useState } from "react"
+import { getToken } from "@/lib/helpers/localStorage"
+import { toast } from "sonner"
+import axiosInstance from "@/lib/utils/api"
 import { Input } from "./ui/input"
+import { Textarea } from "./ui/textarea"
 import { Button } from "./ui/button"
 import {
   Select,
@@ -12,14 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select"
-import { getToken } from "@/lib/helpers/localStorage"
-import { Textarea } from "./ui/textarea"
-import { toast } from "sonner"
-import axiosInstance from "@/lib/utils/api"
-import { useEffect, useState } from "react"
+import { Label } from "./ui/label"
 
 const AddTaskForm = () => {
-  const initialTask: Task = {
+  const [task, setTask] = useState({
     title: "",
     description: "",
     dueDate: "",
@@ -27,75 +23,7 @@ const AddTaskForm = () => {
     importance: 1,
     complexity: 1,
     category: "",
-    isCompleted: false,
-    priority: 1,
-  }
-
-  const taskSchema = z.object({
-    title: z.string().min(3, "Min 3").max(50, "Max 50"),
-    description: z.string().max(300, "Max 300"),
-    dueDate: z.string(),
-    estCompletion: z.preprocess(
-      (a) => parseInt(z.string().parse(a), 10),
-      z.number().positive().min(1, "Min 1").max(30, "Max 30")
-    ),
-    importance: z.preprocess(
-      (a) => parseInt(z.string().parse(a), 10),
-      z.number().positive().min(1, "Min 1").max(10, "Max 10")
-    ),
-    complexity: z.preprocess(
-      (a) => parseInt(z.string().parse(a), 10),
-      z.number().positive().min(1, "Min 1").max(10, "Max 10")
-    ),
-
-    category: z.string(),
-    isCompleted: z.boolean(),
-    priority: z.preprocess(
-      (a) => parseInt(z.string().parse(a), 10),
-      z.number().positive().min(1, "Min 1").max(10, "Max 10")
-    ),
   })
-
-  const form = useForm<z.infer<typeof taskSchema>>({
-    resolver: zodResolver(taskSchema),
-    defaultValues: initialTask,
-  })
-
-  function onAddTask(values: z.infer<typeof taskSchema>) {
-    console.log(values)
-
-    axiosInstance
-      .post(
-        "/tasks/create/",
-        {
-          title: values.title,
-          description: values.description,
-          due_date: values.dueDate,
-          est_completion: values.estCompletion,
-          importance: values.importance,
-          complexity: values.complexity,
-          category: values.category,
-          is_completed: values.isCompleted,
-          priority: values.priority,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${getToken()}`,
-          },
-        }
-      )
-      .then((res) => res.data)
-      .then((data) => {
-        console.log(data)
-        toast.success("Task added successfully")
-        form.reset()
-      })
-      .catch((error) => {
-        console.error("Error:", error)
-        toast.error("Error adding task")
-      })
-      .finally(() => { })
-  }
 
   const [categories, setCategories] = useState([])
 
@@ -116,141 +44,145 @@ const AddTaskForm = () => {
       })
   }, [])
 
+  function onAddTask(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    axiosInstance
+      .post(
+        "/tasks/create/",
+        {
+          title: task.title,
+          description: task.description,
+          due_date: task.dueDate,
+          est_completion: task.estCompletion,
+          importance: task.importance,
+          complexity: task.complexity,
+          category: task.category,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      )
+      .then((res) => res.data)
+      .then((data) => {
+        console.log(data)
+        toast.success("Task added successfully")
+        setTask({
+          title: "",
+          description: "",
+          dueDate: "",
+          estCompletion: 1,
+          importance: 1,
+          complexity: 1,
+          category: "",
+        })
+      })
+      .catch((error) => {
+        console.error("Error:", error)
+        toast.error("Error adding task")
+      })
+      .finally(() => {})
+  }
+
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onAddTask)}
-        className="p-4 bg-white rounded-md "
-      >
-        <div className="grid grid-cols-2 items-start gap-4">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Task</FormLabel>
-                <FormControl>
-                  <Input type={"text"} placeholder={"Enter task"} {...field} />
-                </FormControl>
-              </FormItem>
-            )}
+    <form
+      onSubmit={onAddTask}
+      className="max-w-xl mx-auto p-4 bg-white rounded-md "
+    >
+      <div className="grid gird-cols-1 md:grid-cols-2 items-start gap-6">
+        <div>
+          <Label htmlFor="title">Task</Label>
+          <Input
+            type="text"
+            id="title"
+            value={task.title}
+            onChange={(e) => setTask({ ...task, title: e.target.value })}
           />
-
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  {...field}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {categories.map((category, index) => (
-                      <SelectItem key={index} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dueDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Due Date</FormLabel>
-                <FormControl>
-                  <Input type={"date"} {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="estCompletion"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Estimated Completion (in days [1-30])</FormLabel>
-                <FormControl>
-                  <Input
-                    type={"number"}
-                    {...field}
-                    inputMode="numeric"
-                    min={1}
-                    max={30}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="importance"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Importance [1-10]</FormLabel>
-                <FormControl>
-                  <Input
-                    type={"number"}
-                    {...field}
-                    inputMode="numeric"
-                    min={1}
-                    max={10}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="complexity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Complexity [1-10]</FormLabel>
-                <FormControl>
-                  <Input
-                    type={"number"}
-                    {...field}
-                    inputMode="numeric"
-                    min={1}
-                    max={10}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <div className="col-start-1 col-end-3">
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder={"Enter description"} {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
         </div>
+        <div>
+          <Label htmlFor="category">Category</Label>
+          <Select
+            name="category"
+            value={task.category}
+            onValueChange={(e: any) =>
+              setTask({ ...task, category: e.target.value })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
 
-        <Button type="submit" className="mt-4 mb-2 bg-green-600 float-right">
-          Create Task
-        </Button>
-      </form>
-    </Form>
+            <SelectContent>
+              {categories.map((category, index) => (
+                <SelectItem key={index} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="dueDate">Due Date</Label>
+          <Input
+            type="date"
+            id="dueDate"
+            value={task.dueDate}
+            onChange={(e) => setTask({ ...task, dueDate: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label>Estimated Completion (in days [1-30])</Label>
+          <Input
+            type="number"
+            id="estCompletion"
+            value={task.estCompletion}
+            onChange={(e) =>
+              setTask({ ...task, estCompletion: parseInt(e.target.value) })
+            }
+            min={1}
+            max={30}
+          />
+        </div>
+        <div>
+          <Label htmlFor="importance">Importance [1-10]</Label>
+          <Input
+            type="number"
+            id="importance"
+            value={task.importance}
+            onChange={(e) =>
+              setTask({ ...task, importance: parseInt(e.target.value) })
+            }
+            min={1}
+            max={10}
+          />
+        </div>
+        <div>
+          <Label htmlFor="complexity">Complexity [1-10]</Label>
+          <Input
+            type="number"
+            id="complexity"
+            value={task.complexity}
+            onChange={(e) =>
+              setTask({ ...task, complexity: parseInt(e.target.value) })
+            }
+            min={1}
+            max={10}
+          />
+        </div>
+        <div className="col-start-1 col-end-3">
+          <Label htmlFor="description">Description</Label>
+          <Textarea
+            id="description"
+            value={task.description}
+            onChange={(e) => setTask({ ...task, description: e.target.value })}
+          />
+        </div>
+      </div>
+      <Button type="submit" className="mt-4 mb-2 bg-green-600 float-right">
+        Create Task
+      </Button>
+    </form>
   )
 }
 

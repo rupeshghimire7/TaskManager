@@ -11,7 +11,7 @@ const EditTask = () => {
 
   return (
     <Layout>
-      <div className="flex justify-center">
+      <div className="flex justify-between">
         <Link to={"/"}>
           <Button
             className="bg-transparent text-gray-600 hover:bg-transparent    "
@@ -20,10 +20,10 @@ const EditTask = () => {
             <MoveLeftIcon />
           </Button>
         </Link>
-        <h1 className="text-center text-2xl font-bold my-2">Edit Task</h1>
-
-        <EditTaskForm taskId={taskId} />
+        <h1 className="mx-auto text-2xl font-bold my-2">Edit Task</h1>
       </div>
+
+      <EditTaskForm taskId={taskId} />
     </Layout>
   )
 }
