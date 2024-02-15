@@ -88,7 +88,7 @@ def days_remaining(due_date):
 def getTasks(request):
     user = request.user
     tasks = Task.objects.filter(user=user).order_by("-priority")
-    tasks = sorted(tasks)
+    # tasks = sorted(tasks, key=lambda x: )
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -157,8 +157,8 @@ def updateTask(request, pk):
     # update the instance with data given by user
     task.title = data["title"]
     task.description = data["description"]
-    task.due_date = data["due_date"]
-    task.due_time = data["due_time"]
+    task.due_date = datetime.strptime(data["due_date"], "%Y-%m-%d").date()
+    # task.due_time = data["due_time"]
     task.est_completion = data["est_completion"]
     task.importance = data["importance"]
     task.complexity = data["complexity"]
@@ -177,7 +177,7 @@ def updateTask(request, pk):
     )[0]
     task.save()
 
-    serializer = Task(task, many=False)
+    serializer = TaskSerializer(task, many=False)
     return Response(serializer.data)
 
 
