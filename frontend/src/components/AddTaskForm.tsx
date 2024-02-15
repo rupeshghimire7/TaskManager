@@ -16,6 +16,7 @@ import { getToken } from "@/lib/helpers/localStorage"
 import { Textarea } from "./ui/textarea"
 import { toast } from "sonner"
 import axiosInstance from "@/lib/utils/api"
+import { useEffect, useState } from "react"
 
 const AddTaskForm = () => {
   const initialTask: Task = {
@@ -32,16 +33,16 @@ const AddTaskForm = () => {
   }
 
   const taskSchema = z.object({
-    title: z.string().min(3).max(50),
-    description: z.string().max(300),
+    title: z.string().min(3, "Min 3").max(50, "Max 50"),
+    description: z.string().max(300, "Max 300"),
     dueDate: z.string(),
     dueTime: z.string(),
-    estCompletion: z.number().min(1).max(30),
-    importance: z.number().min(1).max(10),
-    complexity: z.number().min(1).max(10),
+    estCompletion: z.number().min(1, "Min 1").max(30, "Max 30").int(),
+    importance: z.number().min(1, "Min 1").max(10, "Max 10").int(),
+    complexity: z.number().min(1, "Min 1").max(10, "Max 10").int(),
     category: z.string(),
     isCompleted: z.boolean(),
-    priority: z.number().min(1).max(10),
+    priority: z.number().min(1, "Min 1").max(10, "Max 10").int(),
   })
 
   const form = useForm<z.infer<typeof taskSchema>>({
@@ -86,6 +87,26 @@ const AddTaskForm = () => {
       .finally(() => {})
   }
 
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    axiosInstance
+      .get("/tasks/category/", {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      })
+      .then((res) => res.data)
+      .then((data) => {
+        console.log(data)
+        setCategories(data)
+      })
+      .catch((error) => {
+        console.error("Error:", error)
+        toast.error("Error fetching categories")
+      })
+  }, [])
+
   return (
     <Form {...form}>
       <form
@@ -123,9 +144,11 @@ const AddTaskForm = () => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="work">Work</SelectItem>
-                    <SelectItem value="personal">Personal</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    {categories.map((category, index) => (
+                      <SelectItem key={index} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </FormItem>
