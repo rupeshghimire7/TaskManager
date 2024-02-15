@@ -37,13 +37,7 @@ const AddTaskForm = () => {
     description: z.string().max(300, "Max 300"),
     dueDate: z.string(),
     dueTime: z.string(),
-
-    estCompletion: z.preprocess(
-      (a) => parseInt(z.string().parse(a), 10),
-      z.number().positive().min(1)
-    ),
-
-    // estCompletion: z.number().min(1, "Min 1").max(30, "Max 30").int(),
+    estCompletion: z.number().min(1, "Min 1").max(30, "Max 30").int(),
     importance: z.number().min(1, "Min 1").max(10, "Max 10").int(),
     complexity: z.number().min(1, "Min 1").max(10, "Max 10").int(),
     category: z.string(),

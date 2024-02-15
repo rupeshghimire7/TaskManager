@@ -129,7 +129,7 @@ def createTask(request):
         )[0],
     )
 
-    serializer = Task(task, many=False)
+    serializer = TaskSerializer(task, many=False)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
