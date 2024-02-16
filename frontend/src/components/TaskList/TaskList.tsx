@@ -69,7 +69,11 @@ export default function TaskList() {
       )
       .then((res) => {
         console.log(res)
-        toast.success("Task marked as completed")
+        if (newTask.is_completed) {
+          toast.success("Task marked as completed")
+        } else {
+          toast.success("Task marked as not completed")
+        }
         setTasks(
           (prevTasks: any) =>
             prevTasks?.map((task: any) =>
