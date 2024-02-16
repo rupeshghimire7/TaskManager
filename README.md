@@ -1,6 +1,6 @@
 # Task Manager
 
-Task Manager is a project developed to assist you in managing your tasks effectively. Leveraging machine learning models, it assigns priorities to your tasks, enabling you to prioritize and complete them efficiently. The project utilizes a Python Django backend with a RESTful API for communication with the frontend, which is developed using Typescript and React.
+Task Manager is a project developed to assist you in managing your tasks effectively. Leveraging machine learning models, it assigns priorities to your tasks, enabling you to prioritize and complete them efficiently. The project utilizes a Python Django backend with a RESTful API for communication with the front end, which is developed using Typescript and React.
 
 Task Manager serves as a comprehensive tool for individuals and teams to streamline their task management process. Whether you're a busy professional juggling multiple responsibilities or a team leader overseeing various projects, this project helps in organizing and prioritizing tasks effectively. By leveraging machine learning, it offers intelligent task prioritization, enhancing productivity and time management.
 
@@ -12,6 +12,12 @@ Task Manager serves as a comprehensive tool for individuals and teams to streaml
 - Task Management: Create, update, delete, and mark tasks as complete with respective details.
 - Machine Learning Priority Assignment: Utilizes a machine learning model (SVM) to assign priority to tasks based on provided details.
 - User-friendly UI: Attractive interface to visualize and manage prioritized tasks.
+
+<hr>
+
+## ML Model (SVM)
+
+The SVM model in this project is trained using the Jupyter Notebook environment. It's designed to analyze task details and assign priorities based on various factors such as deadline, category, estimated time to complete task, complexity, and importance to calsulate a priority value and assign it to the task.
 
 <hr>
 
@@ -56,8 +62,4 @@ A big thanks to them.
 
 <hr>
 
-## ML Model (SVM)
 
-The SVM model in this project is trained using the Jupyter Notebook environment. It's designed to analyze task details and assign priorities based on various factors such as deadline, category, estimated time to complete task, complexity, and importance to calsulate a priority value and assign it to the task.
-
-<hr>
